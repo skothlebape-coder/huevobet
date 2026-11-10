@@ -1,1 +1,911 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HuevoBet — рофл-контора huevo</title>
+<style>
+  :root {
+    --bg: #0e0f13;
+    --bg-2: #161821;
+    --bg-3: #1e2130;
+    --line: #2a2e42;
+    --text: #e7e9f3;
+    --muted: #8a8fa8;
+    --accent: #ffd23f;
+    --accent-2: #ff9f1c;
+    --green: #3ddc97;
+    --red: #ff5470;
+    --blue: #4dabf7;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    font-size: 14px; }
+  a { color: var(--accent); text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
 
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, #14161f 0%, #0e0f13 100%);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+  .logo-egg {
+    width: 34px; height: 40px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 35% 30%, #fff6c9, var(--accent) 60%, var(--accent-2));
+    box-shadow: 0 4px 14px rgba(255, 210, 63, .35), inset -4px -6px 10px rgba(0,0,0,.2);
+    position: relative;
+  }
+  .logo-egg::after {
+    content: ""; position: absolute; top: 8px; left: 10px; width: 8px; height: 12px;
+    background: rgba(255,255,255,.55); border-radius: 50%; filter: blur(1px);
+  }
+  .logo span b { color: var(--accent); }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .balance {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-3); border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 999px; font-weight: 700;
+  }
+  .balance .coin {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff6c9, var(--accent) 70%);
+    box-shadow: inset -2px -3px 4px rgba(0,0,0,.25);
+  }
+  .btn {
+    background: var(--accent); color: #1a1a1a; border: none;
+    padding: 9px 16px; border-radius: 10px; font-weight: 700;
+    transition: transform .08s ease, filter .15s ease;
+  }
+  .btn:hover { filter: brightness(1.05); }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .btn.small { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+  .btn.danger { background: var(--red); color: #fff; }
+
+  /* Layout */
+  .layout {
+    display: grid; grid-template-columns: 1fr 360px; gap: 16px;
+    padding: 16px 20px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--bg-2); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .panel h2 { margin: 0 0 12px; font-size: 16px; letter-spacing: .3px; }
+  .muted { color: var(--muted); font-size: 12px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip {
+    background: var(--bg-3); border: 1px solid var(--line);
+    padding: 7px 12px; border-radius: 999px; font-size: 13px; color: var(--text);
+  }
+  .chip.active { background: var(--accent); color: #1a1a1a; border-color: var(--accent); font-weight: 700; }
+
+  /* Match list */
+  .match {
+    background: var(--bg-3); border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+    transition: border-color .15s ease;
+  }
+  .match:hover { border-color: #3a3f5a; }
+  .match-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; margin-bottom: 8px;
+  }
+  .match-teams { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .match-teams .vs { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .team-logo {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--bg-2); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    overflow: hidden;
+  }
+  .team-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .match-meta { color: var(--muted); font-size: 12px; display: flex; gap: 10px; align-items: center; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  }
+  .badge.dota { background: rgba(255, 84, 112, .15); color: var(--red); }
+  .badge.cs2 { background: rgba(77, 171, 247, .15); color: var(--blue); }
+  .badge.live { background: rgba(61, 220, 151, .15); color: var(--green); }
+
+  /* Markets */
+  .markets {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px; margin-top: 10px;
+  }
+  .market-group { margin-top: 10px; }
+  .market-title {
+    font-size: 12px; color: var(--muted); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .odd-btn {
+    width: 100%; background: var(--bg-2); border: 1px solid var(--line);
+    color: var(--text); padding: 8px 10px; border-radius: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; transition: all .12s ease;
+  }
+  .odd-btn:hover { border-color: var(--accent); }
+  .odd-btn.selected { background: var(--accent); color: #1a1a1a; border-color: var(--accent); font-weight: 700; }
+  .odd-btn .odd-val { font-weight: 700; color: var(--accent); }
+  .odd-btn.selected .odd-val { color: #1a1a1a; }
+
+  /* Bet slip */
+  .slip { position: sticky; top: 76px; }
+  .slip-empty { color: var(--muted); text-align: center; padding: 20px 10px; font-size: 13px; }
+  .slip-item {
+    background: var(--bg-3); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px; margin-bottom: 8px; position: relative;
+  }
+  .slip-item .remove {
+    position: absolute; top: 6px; right: 8px; background: transparent;
+    border: none; color: var(--muted); font-size: 16px;
+  }
+  .slip-item .remove:hover { color: var(--red); }
+  .slip-item .si-match { font-size: 11px; color: var(--muted); }
+  .slip-item .si-pick { font-weight: 600; margin: 2px 0; }
+  .slip-item .si-odd { color: var(--accent); font-weight: 700; }
+
+  .slip-stake {
+    display: flex; align-items: center; gap: 8px; margin-top: 10px;
+  }
+  .slip-stake input {
+    flex: 1; background: var(--bg-3); border: 1px solid var(--line);
+    color: var(--text); padding: 10px; border-radius: 8px; font-size: 14px;
+    font-weight: 600;
+  }
+  .slip-stake input:focus { outline: none; border-color: var(--accent); }
+  .quick-amounts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .quick-amounts button {
+    background: var(--bg-3); border: 1px solid var(--line); color: var(--text);
+    padding: 6px 10px; border-radius: 8px; font-size: 12px;
+  }
+  .quick-amounts button:hover { border-color: var(--accent); }
+
+  .slip-summary {
+    margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+    display: flex; justify-content: space-between; font-size: 13px;
+  }
+  .slip-summary b { color: var(--accent); }
+  .slip-place { width: 100%; margin-top: 12px; padding: 12px; font-size: 15px; }
+
+  /* History */
+  .history-item {
+    background: var(--bg-3); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  }
+  .history-item .hi-info { font-size: 13px; }
+  .history-item .hi-pick { font-weight: 600; }
+  .history-item .hi-meta { color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .status {
+    padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  }
+  .status.pending { background: rgba(255, 210, 63, .15); color: var(--accent); }
+  .status.won { background: rgba(61, 220, 151, .15); color: var(--green); }
+  .status.lost { background: rgba(255, 84, 112, .15); color: var(--red); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--bg-2); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px; max-width: 420px; width: 100%;
+  }
+  .modal h3 { margin: 0 0 10px; }
+  .modal .close-x {
+    float: right; background: transparent; border: none; color: var(--muted);
+    font-size: 22px; line-height: 1;
+  }
+  .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
+  .quick-grid button {
+    background: var(--bg-3); border: 1px solid var(--line); color: var(--text);
+    padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700;
+  }
+  .quick-grid button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .disclaimer {
+    background: rgba(255, 210, 63, .08); border: 1px dashed rgba(255, 210, 63, .4);
+    color: var(--accent); padding: 10px 12px; border-radius: 10px;
+    font-size: 12px; margin-top: 12px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 20px; text-align: center; color: var(--muted); font-size: 12px;
+    border-top: 1px solid var(--line); margin-top: 30px;
+  }
+  footer .disc {
+    max-width: 720px; margin: 10px auto 0; padding: 10px;
+    background: rgba(255, 84, 112, .08); border: 1px dashed rgba(255, 84, 112, .3);
+    color: #ffb3c1; border-radius: 10px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-3); border: 1px solid var(--line);
+    padding: 12px 18px; border-radius: 10px; font-size: 13px;
+    z-index: 200; opacity: 0; transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+  .toast.ok { border-color: var(--green); color: var(--green); }
+  .toast.err { border-color: var(--red); color: var(--red); }
+
+  .limit-warn {
+    background: rgba(255, 84, 112, .1); border: 1px solid rgba(255, 84, 112, .3);
+    color: #ffb3c1; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: var(--muted);
+  }
+  .empty-state .egg-big {
+    width: 80px; height: 96px; margin: 0 auto 14px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 35% 30%, #fff6c9, var(--accent) 60%, var(--accent-2));
+    opacity: .4;
+  }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tab {
+    flex: 1; padding: 8px; text-align: center; background: var(--bg-3);
+    border: 1px solid var(--line); border-radius: 8px; font-size: 13px;
+    color: var(--muted); cursor: pointer;
+  }
+  .tab.active { color: var(--text); border-color: var(--accent); background: rgba(255, 210, 63, .08); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-egg" aria-hidden="true"></div>
+    <span>Huevo<b>Bet</b></span>
+  </div>
+  <div class="header-right">
+    <div class="balance" title="Баланс копилки">
+      <span class="coin"></span>
+      <span id="balanceValue">0</span>
+    </div>
+    <button class="btn" id="btnTopup">+ Пополнить</button>
+    <button class="btn ghost small" id="btnLimits" title="Лимиты">⚙️</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT: matches -->
+  <main>
+    <section class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <h2 style="margin:0;">🔥 Линия</h2>
+        <span class="muted" id="updatedLabel">—</span>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="chip active" data-filter="all">Все</button>
+        <button class="chip" data-filter="dota2">Dota 2</button>
+        <button class="chip" data-filter="cs2">CS2</button>
+        <button class="chip" data-filter="live">🔴 Live</button>
+      </div>
+
+      <div id="matchesList"></div>
+    </section>
+
+    <section class="panel" style="margin-top:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <h2 style="margin:0;">📜 История ставок</h2>
+        <button class="btn small ghost" id="btnRoll">🎲 Тестовый розыгрыш</button>
+      </div>
+      <div id="historyList"></div>
+    </section>
+  </main>
+
+  <!-- RIGHT: bet slip -->
+  <aside class="slip panel">
+    <h2>🎟 Купон</h2>
+    <div id="slipBody"></div>
+  </aside>
+</div>
+
+<footer>
+  <div>HuevoBet · рофл-проект соцсети <b>huevo</b></div>
+  <div class="disc">
+    ⚠️ Игровые монеты не имеют реальной денежной стоимости. Проект создан исключительно для развлечения.
+    Никаких настоящих денег, никаких выплат. Если ставки перестают быть весёлыми — сделайте перерыв.
+  </div>
+</footer>
+
+<!-- Top-up modal -->
+<div class="modal-backdrop" id="modalTopup">
+  <div class="modal">
+    <button class="close-x" data-close>&times;</button>
+    <h3>🥚 Пополнить копилку</h3>
+    <p class="muted">Виртуальные монеты — просто фан. Выберите сумму или введите свою.</p>
+    <div class="quick-grid" id="quickTopup">
+      <button data-amount="100">+100</button>
+      <button data-amount="500">+500</button>
+      <button data-amount="1000">+1 000</button>
+      <button data-amount="5000">+5 000</button>
+    </div>
+    <div class="slip-stake">
+      <input type="number" id="customTopup" min="1" placeholder="Своя сумма..." />
+      <button class="btn" id="btnCustomTopup">OK</button>
+    </div>
+    <div class="disclaimer">
+      Монеты не имеют реальной ценности. Это рофл-валюта внутри huevo.
+    </div>
+  </div>
+</div>
+
+<!-- Limits modal -->
+<div class="modal-backdrop" id="modalLimits">
+  <div class="modal">
+    <button class="close-x" data-close>&times;</button>
+    <h3>⚙️ Лимиты (Anti-Gambling)</h3>
+    <p class="muted">Жёсткие ограничения, чтобы рофл оставался рофлом.</p>
+    <div style="margin-top: 12px;">
+      <label class="muted">Макс. сумма одной ставки</label>
+      <input type="number" id="inpMaxBet" style="width:100%; margin-top:4px; padding:8px; background:var(--bg-3); border:1px solid var(--line); color:var(--text); border-radius:8px;" />
+    </div>
+    <div style="margin-top: 10px;">
+      <label class="muted">Дневной лимит ставок</label>
+      <input type="number" id="inpDailyLimit" style="width:100%; margin-top:4px; padding:8px; background:var(--bg-3); border:1px solid var(--line); color:var(--text); border-radius:8px;" />
+    </div>
+    <button class="btn" id="btnSaveLimits" style="margin-top:14px; width:100%;">Сохранить</button>
+    <div class="disclaimer">
+      Лимиты нельзя снять полностью — это защита от залипания.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   HuevoBet — vanilla JS
+   ========================================================= */
+
+const LS = {
+  balance: 'huevobet_balance',
+  bets:    'huevobet_bets',
+  limits:  'huevobet_limits',
+  daily:   'huevobet_daily',
+};
+
+const DEFAULT_LIMITS = {
+  maxBet: 500,
+  dailyLimit: 2000,
+};
+
+const state = {
+  matches: [],
+  slip: [],          // [{matchId, marketId, selectionId, label, matchLabel, odds}]
+  filter: 'all',
+};
+
+/* ---------- Storage helpers ---------- */
+function loadNum(key, def) {
+  const v = localStorage.getItem(key);
+  if (v === null) return def;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : def;
+}
+function saveNum(key, v) { localStorage.setItem(key, String(v)); }
+
+function loadJSON(key, def) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? def; }
+  catch { return def; }
+}
+function saveJSON(key, v) { localStorage.setItem(key, JSON.stringify(v)); }
+
+function getBalance() { return loadNum(LS.balance, 1000); } // стартовый бонус
+function setBalance(v) { saveNum(LS.balance, Math.max(0, Math.round(v))); renderBalance(); }
+
+function getLimits() {
+  const l = loadJSON(LS.limits, null);
+  if (!l) return { ...DEFAULT_LIMITS };
+  return {
+    maxBet: Math.max(50, Math.min(5000, Number(l.maxBet) || DEFAULT_LIMITS.maxBet)),
+    dailyLimit: Math.max(200, Math.min(50000, Number(l.dailyLimit) || DEFAULT_LIMITS.dailyLimit)),
+  };
+}
+function setLimits(l) { saveJSON(LS.limits, l); }
+
+function getDaily() {
+  const today = new Date().toDateString();
+  const d = loadJSON(LS.daily, { date: today, spent: 0 });
+  if (d.date !== today) { d.date = today; d.spent = 0; saveJSON(LS.daily, d); }
+  return d;
+}
+function addDailySpent(amount) {
+  const d = getDaily();
+  d.spent += amount;
+  saveJSON(LS.daily, d);
+}
+
+/* ---------- Toast ---------- */
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg, type = '') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+}
+
+/* ---------- Render: balance ---------- */
+function renderBalance() {
+  document.getElementById('balanceValue').textContent = getBalance().toLocaleString('ru-RU');
+}
+
+/* ---------- Render: matches ---------- */
+function fmtTime(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return d.toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function gameBadge(game) {
+  if (game === 'dota2') return '<span class="badge dota">DOTA 2</span>';
+  if (game === 'cs2')   return '<span class="badge cs2">CS2</span>';
+  return '';
+}
+
+function teamLogo(team) {
+  if (!team) return '<span class="team-logo">?</span>';
+  if (team.image_url) return `<span class="team-logo"><img src="${team.image_url}" alt="" onerror="this.parentNode.innerHTML='${(team.name||'?').charAt(0).toUpperCase()}'"></span>`;
+  return `<span class="team-logo">${(team.name || '?').charAt(0).toUpperCase()}</span>`;
+}
+
+function renderMatches() {
+  const list = document.getElementById('matchesList');
+  let matches = state.matches.slice();
+
+  if (state.filter === 'dota2') matches = matches.filter(m => m.game === 'dota2');
+  else if (state.filter === 'cs2') matches = matches.filter(m => m.game === 'cs2');
+  else if (state.filter === 'live') matches = matches.filter(m => m.status === 'running');
+
+  if (!matches.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="egg-big"></div>
+        <div>Пока нет матчей по выбранному фильтру.<br>
+        <span class="muted">Данные обновляются каждые 15 минут.</span></div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = matches.map(m => {
+    const marketsHtml = (m.markets || []).map(mk => {
+      const title = mk.line !== undefined && mk.line !== null
+        ? `${mk.name} (${mk.line})`
+        : mk.name;
+      const btns = (mk.selections || []).map(sel => {
+        const selKey = `${m.id}__${mk.id}__${sel.id}`;
+        const inSlip = state.slip.some(s => s.key === selKey);
+        return `
+          <button class="odd-btn ${inSlip ? 'selected' : ''}"
+                  data-match="${m.id}" data-market="${mk.id}" data-sel="${sel.id}"
+                  data-label="${escapeHtml(sel.name)}"
+                  data-matchlabel="${escapeHtml(m.team1.name)} vs ${escapeHtml(m.team2.name)}"
+                  data-odds="${sel.odds}">
+            <span>${escapeHtml(sel.name)}</span>
+            <span class="odd-val">${sel.odds.toFixed(2)}</span>
+          </button>`;
+      }).join('');
+      return `
+        <div class="market-group">
+          <div class="market-title">${escapeHtml(title)}</div>
+          <div class="markets">${btns}</div>
+        </div>`;
+    }).join('');
+
+    const liveBadge = m.status === 'running' ? '<span class="badge live">● LIVE</span>' : '';
+
+    return `
+      <div class="match">
+        <div class="match-head">
+          <div class="match-teams">
+            ${teamLogo(m.team1)}
+            <span>${escapeHtml(m.team1.name)}</span>
+            <span class="vs">vs</span>
+            <span>${escapeHtml(m.team2.name)}</span>
+            ${teamLogo(m.team2)}
+          </div>
+          <div class="match-meta">
+            ${gameBadge(m.game)}
+            ${liveBadge}
+            <span>${fmtTime(m.start_time)}</span>
+          </div>
+        </div>
+        <div class="muted" style="font-size:12px;">${escapeHtml(m.tournament || m.league || '')}</div>
+        ${marketsHtml}
+      </div>`;
+  }).join('');
+
+  // Bind odd buttons
+  list.querySelectorAll('.odd-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleSlip(btn));
+  });
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+/* ---------- Bet slip ---------- */
+function toggleSlip(btn) {
+  const matchId = btn.dataset.match;
+  const marketId = btn.dataset.market;
+  const selId = btn.dataset.sel;
+  const key = `${matchId}__${marketId}__${selId}`;
+
+  const idx = state.slip.findIndex(s => s.key === key);
+  if (idx >= 0) {
+    state.slip.splice(idx, 1);
+  } else {
+    // remove other selections from same market (как в реальной конторе)
+    state.slip = state.slip.filter(s => !(s.matchId === matchId && s.marketId === marketId));
+    state.slip.push({
+      key,
+      matchId,
+      marketId,
+      selectionId: selId,
+      label: btn.dataset.label,
+      matchLabel: btn.dataset.matchlabel,
+      odds: parseFloat(btn.dataset.odds),
+    });
+  }
+  renderMatches();
+  renderSlip();
+}
+
+function renderSlip() {
+  const body = document.getElementById('slipBody');
+  if (!state.slip.length) {
+    body.innerHTML = `<div class="slip-empty">Кликни на коэффициент —<br>и он появится здесь 🥚</div>`;
+    return;
+  }
+
+  const itemsHtml = state.slip.map(s => `
+    <div class="slip-item">
+      <button class="remove" data-remove="${s.key}">&times;</button>
+      <div class="si-match">${escapeHtml(s.matchLabel)}</div>
+      <div class="si-pick">${escapeHtml(s.label)}</div>
+      <div class="si-odd">× ${s.odds.toFixed(2)}</div>
+    </div>
+  `).join('');
+
+  const totalOdds = state.slip.reduce((acc, s) => acc * s.odds, 1);
+  const stake = Number(document.getElementById('slipStake')?.value) || 0;
+  const potential = stake * totalOdds;
+
+  const limits = getLimits();
+  const daily = getDaily();
+  const dailyLeft = Math.max(0, limits.dailyLimit - daily.spent);
+
+  body.innerHTML = `
+    ${dailyLeft < limits.maxBet ? `<div class="limit-warn">Остаток дневного лимита: ${dailyLeft} 🪙</div>` : ''}
+    ${itemsHtml}
+    <div class="slip-stake">
+      <input type="number" id="slipStake" min="1" placeholder="Сумма ставки" value="${stake || ''}" />
+    </div>
+    <div class="quick-amounts">
+      <button data-stake="50">50</button>
+      <button data-stake="100">100</button>
+      <button data-stake="250">250</button>
+      <button data-stake="500">500</button>
+      <button data-stake="max">MAX</button>
+    </div>
+    <div class="slip-summary">
+      <span>Общий коэф.</span><b>× ${totalOdds.toFixed(2)}</b>
+    </div>
+    <div class="slip-summary">
+      <span>Возможный выигрыш</span><b>${Math.round(potential).toLocaleString('ru-RU')} 🪙</b>
+    </div>
+    <button class="btn slip-place" id="btnPlaceBet">Сделать ставку</button>
+    <div class="disclaimer" style="margin-top:10px;">
+      Макс. ставка: ${limits.maxBet} · Дневной лимит: ${limits.dailyLimit}
+    </div>
+  `;
+
+  // bindings
+  body.querySelectorAll('[data-remove]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.slip = state.slip.filter(s => s.key !== b.dataset.remove);
+      renderMatches();
+      renderSlip();
+    });
+  });
+  body.querySelectorAll('.quick-amounts button').forEach(b => {
+    b.addEventListener('click', () => {
+      const inp = document.getElementById('slipStake');
+      if (b.dataset.stake === 'max') {
+        const maxStake = Math.min(limits.maxBet, getBalance(), dailyLeft);
+        inp.value = Math.max(0, Math.floor(maxStake));
+      } else {
+        inp.value = b.dataset.stake;
+      }
+      renderSlip();
+    });
+  });
+  const stakeInput = document.getElementById('slipStake');
+  stakeInput.addEventListener('input', renderSlip);
+  document.getElementById('btnPlaceBet').addEventListener('click', placeBet);
+}
+
+/* ---------- Place bet ---------- */
+function placeBet() {
+  const stakeInput = document.getElementById('slipStake');
+  const stake = Math.floor(Number(stakeInput.value));
+  const limits = getLimits();
+  const daily = getDaily();
+  const balance = getBalance();
+  const totalOdds = state.slip.reduce((a, s) => a * s.odds, 1);
+
+  if (!state.slip.length) return toast('Купон пуст', 'err');
+  if (!stake || stake < 1) return toast('Укажи сумму ставки', 'err');
+  if (stake > limits.maxBet) return toast(`Макс. ставка: ${limits.maxBet}`, 'err');
+  if (stake > balance) return toast('Не хватает монет в копилке', 'err');
+  if (daily.spent + stake > limits.dailyLimit) return toast('Превышен дневной лимит', 'err');
+
+  const bet = {
+    id: 'b_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    createdAt: new Date().toISOString(),
+    stake,
+    totalOdds,
+    potentialWin: Math.round(stake * totalOdds),
+    status: 'pending',
+    selections: state.slip.map(s => ({
+      matchId: s.matchId, marketId: s.marketId, selectionId: s.selectionId,
+      label: s.label, matchLabel: s.matchLabel, odds: s.odds,
+    })),
+  };
+
+  const bets = loadJSON(LS.bets, []);
+  bets.unshift(bet);
+  saveJSON(LS.bets, bets);
+
+  setBalance(balance - stake);
+  addDailySpent(stake);
+
+  state.slip = [];
+  renderMatches();
+  renderSlip();
+  renderHistory();
+  toast(`Ставка принята · −${stake} 🪙`, 'ok');
+}
+
+/* ---------- History ---------- */
+function renderHistory() {
+  const bets = loadJSON(LS.bets, []);
+  const list = document.getElementById('historyList');
+  if (!bets.length) {
+    list.innerHTML = `<div class="empty-state"><div class="egg-big"></div>Пока нет ставок.</div>`;
+    return;
+  }
+  list.innerHTML = bets.slice(0, 50).map(b => {
+    const picks = b.selections.map(s => `${s.label} (×${s.odds.toFixed(2)})`).join(' · ');
+    const statusLabel =
+      b.status === 'pending' ? 'ожидание' :
+      b.status === 'won' ? `выигрыш +${b.payout}` :
+      'проигрыш';
+    return `
+      <div class="history-item">
+        <div class="hi-info">
+          <div class="hi-pick">${escapeHtml(picks)}</div>
+          <div class="hi-meta">
+            ставка ${b.stake} · коэф ×${b.totalOdds.toFixed(2)} ·
+            ${new Date(b.createdAt).toLocaleString('ru-RU')}
+          </div>
+        </div>
+        <span class="status ${b.status}">${statusLabel}</span>
+      </div>`;
+  }).join('');
+}
+
+/* ---------- Settlement (🎲 Тестовый розыгрыш) ---------- */
+function settleBet(bet) {
+  // Для каждого исхода считаем вероятность по кефу (нормализуем по рынку)
+  // Упрощение: перемножаем "честные" вероятности каждого исхода.
+  let winProb = 1;
+  for (const sel of bet.selections) {
+    const match = state.matches.find(m => String(m.id) === String(sel.matchId));
+    if (!match) { winProb *= 0.5; continue; }
+    const market = match.markets.find(mk => mk.id === sel.marketId);
+    if (!market) { winProb *= 0.5; continue; }
+
+    // Нормализация: сумма 1/odds по рынку
+    const sumInv = market.selections.reduce((a, s) => a + 1 / s.odds, 0);
+    const fair = (1 / sel.odds) / sumInv; // вероятность с учётом маржи
+    winProb *= fair;
+  }
+  // Добавим лёгкий "домаржный" сдвиг в пользу конторы (рофл, но честно)
+  winProb = Math.min(0.95, winProb * 0.95);
+
+  const won = Math.random() < winProb;
+  if (won) {
+    setBalance(getBalance() + bet.potentialWin);
+    bet.status = 'won';
+    bet.payout = bet.potentialWin;
+  } else {
+    bet.status = 'lost';
+    bet.payout = 0;
+  }
+}
+
+function rollPending() {
+  const bets = loadJSON(LS.bets, []);
+  const pending = bets.filter(b => b.status === 'pending');
+  if (!pending.length) return toast('Нет ожидающих ставок', 'err');
+  pending.forEach(settleBet);
+  saveJSON(LS.bets, bets);
+  renderHistory();
+  const wonCount = pending.filter(b => b.status === 'won').length;
+  toast(`Разыграно: ${pending.length}. Выиграло: ${wonCount}.`, wonCount ? 'ok' : 'err');
+}
+
+/* ---------- Data loading ---------- */
+async function loadMatches() {
+  try {
+    // Кэш-бастер, чтобы GitHub Pages не отдавал старое
+    const r = await fetch('data/matches.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    state.matches = data.matches || [];
+    document.getElementById('updatedLabel').textContent =
+      'обновлено: ' + fmtTime(data.updated_at);
+    renderMatches();
+  } catch (e) {
+    console.warn('matches.json load failed, using fallback', e);
+    state.matches = fallbackMatches();
+    document.getElementById('updatedLabel').textContent = 'демо-данные (offline)';
+    renderMatches();
+  }
+}
+
+function fallbackMatches() {
+  // Если matches.json ещё не сгенерирован — показываем демо-линию
+  const now = new Date();
+  const in1h = new Date(now.getTime() + 3600_000).toISOString();
+  const in3h = new Date(now.getTime() + 3*3600_000).toISOString();
+  return [
+    {
+      id: 'demo_1', game: 'dota2', status: 'not_started',
+      start_time: in1h, tournament: 'Demo League',
+      team1: { name: 'Team Spirit', image_url: '' },
+      team2: { name: 'Gaimin Gladiators', image_url: '' },
+      markets: [
+        { id: 'winner', name: 'Победитель', selections: [
+          { id: 't1', name: 'Team Spirit', odds: 1.72 },
+          { id: 't2', name: 'Gaimin Gladiators', odds: 2.10 },
+        ]},
+        { id: 'total_maps', name: 'Тотал карт', line: 2.5, selections: [
+          { id: 'over', name: 'Больше 2.5', odds: 1.85 },
+          { id: 'under', name: 'Меньше 2.5', odds: 1.95 },
+        ]},
+        { id: 'duration', name: 'Длительность (средняя карта)', selections: [
+          { id: 'short', name: 'до 30 мин', odds: 2.60 },
+          { id: 'mid',   name: '30–45 мин', odds: 1.80 },
+          { id: 'long',  name: 'более 45 мин', odds: 3.40 },
+        ]},
+      ],
+    },
+    {
+      id: 'demo_2', game: 'cs2', status: 'not_started',
+      start_time: in3h, tournament: 'Demo Cup',
+      team1: { name: 'NAVI', image_url: '' },
+      team2: { name: 'FaZe', image_url: '' },
+      markets: [
+        { id: 'winner', name: 'Победитель', selections: [
+          { id: 't1', name: 'NAVI', odds: 1.95 },
+          { id: 't2', name: 'FaZe', odds: 1.85 },
+        ]},
+        { id: 'total_maps', name: 'Тотал карт', line: 2.5, selections: [
+          { id: 'over', name: 'Больше 2.5', odds: 1.90 },
+          { id: 'under', name: 'Меньше 2.5', odds: 1.90 },
+        ]},
+        { id: 'handicap', name: 'Фора по картам (-1.5)', line: -1.5, selections: [
+          { id: 't1_h', name: 'NAVI (-1.5)', odds: 2.80 },
+          { id: 't2_h', name: 'FaZe (+1.5)', odds: 1.42 },
+        ]},
+      ],
+    },
+  ];
+}
+
+/* ---------- Modals ---------- */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeAllModals() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open')); }
+
+document.getElementById('btnTopup').addEventListener('click', () => openModal('modalTopup'));
+document.getElementById('btnLimits').addEventListener('click', () => {
+  const l = getLimits();
+  document.getElementById('inpMaxBet').value = l.maxBet;
+  document.getElementById('inpDailyLimit').value = l.dailyLimit;
+  openModal('modalLimits');
+});
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeAllModals));
+document.querySelectorAll('.modal-backdrop').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) closeAllModals(); });
+});
+
+document.querySelectorAll('#quickTopup button').forEach(b => {
+  b.addEventListener('click', () => {
+    const amount = Number(b.dataset.amount);
+    setBalance(getBalance() + amount);
+    toast(`+${amount} 🪙 в копилку`, 'ok');
+    closeAllModals();
+  });
+});
+document.getElementById('btnCustomTopup').addEventListener('click', () => {
+  const v = Math.floor(Number(document.getElementById('customTopup').value));
+  if (!v || v < 1) return toast('Неверная сумма', 'err');
+  setBalance(getBalance() + v);
+  toast(`+${v} 🪙 в копилку`, 'ok');
+  document.getElementById('customTopup').value = '';
+  closeAllModals();
+});
+
+document.getElementById('btnSaveLimits').addEventListener('click', () => {
+  const l = {
+    maxBet: Number(document.getElementById('inpMaxBet').value),
+    dailyLimit: Number(document.getElementById('inpDailyLimit').value),
+  };
+  setLimits(l);
+  toast('Лимиты сохранены', 'ok');
+  closeAllModals();
+  renderSlip();
+});
+
+/* ---------- Filters ---------- */
+document.querySelectorAll('#filters .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#filters .chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    state.filter = c.dataset.filter;
+    renderMatches();
+  });
+});
+
+/* ---------- Roll button ---------- */
+document.getElementById('btnRoll').addEventListener('click', rollPending);
+
+/* ---------- Init ---------- */
+(function init() {
+  // Стартовый баланс при первом входе
+  if (localStorage.getItem(LS.balance) === null) {
+    saveNum(LS.balance, 1000);
+  }
+  renderBalance();
+  renderSlip();
+  renderHistory();
+  loadMatches();
+  // Периодическое обновление линии (на случай, если workflow обновил файл)
+  setInterval(loadMatches, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
