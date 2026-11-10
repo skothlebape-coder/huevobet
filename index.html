@@ -4,188 +4,460 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HuevoBet</title>
+<title>HuevoBet — Sports Center</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#0b0e12;color:#f4f5f7;font-family:Arial,sans-serif}
-header{height:70px;background:#11161d;border-bottom:1px solid #252d36;display:flex;align-items:center;justify-content:space-between;padding:0 6%;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:900;color:#a5f05a}
-.logo span{color:white}
-.balance{background:#202a20;padding:10px 15px;border-radius:10px;color:#a5f05a}
-nav{display:flex;gap:8px;padding:15px 6%;overflow-x:auto;background:#11161d}
-nav button,.filter{background:#1b232c;color:#aaa;border:0;padding:12px 17px;border-radius:9px;cursor:pointer;white-space:nowrap}
-nav button.active,nav button:hover,.filter.active{background:#a5f05a;color:#10140c}
-main{max-width:1100px;margin:30px auto;padding:0 18px}
-.hero{background:linear-gradient(120deg,#24351c,#151d19 65%,#17232b);padding:28px;border-radius:18px;margin-bottom:25px}
-.hero h1{font-size:30px;margin:0 0 10px}
-.hero p{color:#b8c5b0;margin:0}
-.section-title{font-size:22px;margin:28px 0 15px}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.match{background:#151b22;border:1px solid #27313c;border-radius:14px;padding:18px;margin-bottom:13px}
-.match-top{display:flex;justify-content:space-between;color:#8e9aa7;font-size:13px;margin-bottom:18px}
-.teams{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:17px;font-weight:bold}
-.vs{color:#66717d;font-size:13px}
-.odds{display:flex;gap:9px;margin-top:17px}
-.odds button{flex:1;background:#222d37;border:1px solid #354352;color:white;border-radius:9px;padding:13px 5px;cursor:pointer}
-.odds button:hover{border-color:#a5f05a;color:#a5f05a}
-.odds small{display:block;color:#a5f05a;margin-top:5px}
-.card{background:#151b22;border:1px solid #27313c;border-radius:14px;padding:20px;margin-bottom:15px}
-input{background:#202a34;border:1px solid #354352;color:white;padding:12px;border-radius:8px;width:100%;margin:10px 0}
-.primary{background:#a5f05a;color:#10140c;border:0;border-radius:9px;padding:13px 18px;font-weight:bold;cursor:pointer}
-.muted{color:#8e9aa7;font-size:13px}
-.hidden{display:none}
-footer{text-align:center;color:#66717d;padding:35px}
-@media(max-width:600px){header{padding:0 15px}.hero h1{font-size:24px}.teams{font-size:14px}.odds button{font-size:12px;padding:10px 2px}}
+:root {
+  --bg:#090b10;
+  --panel:#11151e;
+  --panel2:#171d28;
+  --line:#242b38;
+  --text:#f3f5fa;
+  --muted:#8993a5;
+  --accent:#a4f05b;
+  --red:#ff5d68;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+button { font:inherit; cursor:pointer; }
+.app { display:flex; min-height:100vh; }
+.sidebar {
+  width:235px;
+  padding:26px 17px;
+  border-right:1px solid var(--line);
+  background:#0d1017;
+  position:fixed;
+  inset:0 auto 0 0;
+}
+.logo {
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:-1.5px;
+  margin:3px 12px 35px;
+}
+.logo span { color:var(--accent); }
+.menu-label {
+  color:#647084;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.7px;
+  margin:25px 12px 10px;
+}
+.nav {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.nav button {
+  border:0;
+  background:transparent;
+  color:#9aa4b5;
+  text-align:left;
+  padding:13px 12px;
+  border-radius:10px;
+  font-size:14px;
+  transition:.2s;
+}
+.nav button:hover,.nav button.active {
+  background:#1b242e;
+  color:var(--accent);
+}
+.nav button span { display:inline-block; width:28px; }
+.sidebar-note {
+  position:absolute;
+  bottom:24px;
+  left:17px;
+  right:17px;
+  color:#657084;
+  font-size:11px;
+  line-height:1.6;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.main {
+  width:calc(100% - 235px);
+  margin-left:235px;
+  padding:30px 38px 60px;
+  max-width:1500px;
+}
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:30px;
+}
+.eyebrow {
+  color:var(--accent);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+h1 {
+  font-size:30px;
+  letter-spacing:-1px;
+  margin:8px 0 5px;
+}
+.subtitle { color:var(--muted); font-size:13px; }
+.clock {
+  color:#b4bdca;
+  font-size:13px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:12px 15px;
+  border-radius:10px;
+  white-space:nowrap;
+}
+.hero {
+  background:linear-gradient(115deg,#1b2a20,#141b20 65%,#17202a);
+  border:1px solid #304132;
+  border-radius:17px;
+  padding:25px;
+  margin-bottom:26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.hero h2 { font-size:22px; margin:8px 0; }
+.hero p { color:#a8b6aa; font-size:13px; margin:0; line-height:1.6; }
+.hero-mark {
+  font-size:46px;
+  color:var(--accent);
+  font-weight:900;
+  opacity:.9;
+}
+.section-title {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:30px 0 15px;
+}
+.section-title h2 { font-size:18px; margin:0; }
+.section-title small { color:var(--muted); }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+}
+.stat {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:17px;
+}
+.stat-icon { font-size:19px; }
+.stat strong { display:block; font-size:22px; margin:12px 0 5px; }
+.stat span { color:var(--muted); font-size:12px; }
+.filters {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:17px 0;
+}
+.filter {
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:#aab3c1;
+  border-radius:9px;
+  padding:9px 14px;
+  font-size:12px;
+}
+.filter.active {
+  background:#24321e;
+  color:var(--accent);
+  border-color:#506b38;
+}
+.match-list { display:grid; gap:10px; }
+.empty {
+  border:1px dashed #343e4d;
+  background:var(--panel);
+  border-radius:14px;
+  text-align:center;
+  padding:40px 20px;
+}
+.empty-icon { font-size:32px; margin-bottom:12px; }
+.empty h3 { margin:0 0 8px; font-size:16px; }
+.empty p {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  max-width:420px;
+  margin:0 auto;
+}
+.match {
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:17px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+.match-info { display:flex; flex-direction:column; gap:8px; }
+.match-league { color:var(--muted); font-size:11px; }
+.match-teams { font-size:14px; font-weight:700; }
+.match-time { color:var(--accent); font-size:12px; }
+.tag {
+  font-size:10px;
+  color:var(--accent);
+  background:#24321e;
+  padding:6px 9px;
+  border-radius:6px;
+}
+.footer {
+  color:#606b7c;
+  font-size:11px;
+  text-align:center;
+  margin-top:40px;
+  line-height:1.7;
+}
+.mobile-nav { display:none; }
+@media(max-width:900px) {
+  .main { padding:25px 22px; }
+  .stats { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:600px) {
+  .sidebar { display:none; }
+  .main {
+    width:100%;
+    margin:0;
+    padding:20px 15px 95px;
+  }
+  .topbar { align-items:flex-start; }
+  h1 { font-size:25px; }
+  .clock { font-size:10px; padding:9px; }
+  .hero { padding:19px; }
+  .hero h2 { font-size:19px; }
+  .hero-mark { font-size:34px; }
+  .stats { gap:9px; }
+  .stat { padding:13px; }
+  .stat strong { font-size:19px; }
+  .mobile-nav {
+    display:flex;
+    position:fixed;
+    z-index:5;
+    bottom:0;
+    left:0;
+    right:0;
+    background:#11151e;
+    border-top:1px solid var(--line);
+    justify-content:space-around;
+    padding:10px 4px calc(10px + env(safe-area-inset-bottom));
+  }
+  .mobile-nav button {
+    background:transparent;
+    border:0;
+    color:#8d98a9;
+    font-size:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+  }
+  .mobile-nav button.active { color:var(--accent); }
+  .mobile-nav b { font-size:18px; }
+}
 </style>
 </head>
 <body>
-<header>
- <div class="logo">HUEVO<span>BET</span></div>
- <div class="balance">● <span id="balance">1000</span> очков</div>
-</header>
-<nav>
- <button class="active" onclick="showPage('home',this)">Главная</button>
- <button onclick="showPage('live',this)">LIVE</button>
- <button onclick="showPage('esports',this)">Киберспорт</button>
- <button onclick="showPage('sports',this)">Спорт</button>
- <button onclick="showPage('coupon',this)">Прогнозы</button>
- <button onclick="showPage('profile',this)">Профиль</button>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">HUEVO<span>BET</span></div>
+    <div class="menu-label">МЕНЮ</div>
+    <nav class="nav" id="sideNav">
+      <button class="active" data-page="home"><span>⌂</span>Главная</button>
+      <button data-page="live"><span>●</span>LIVE</button>
+      <button data-page="dota"><span>⚔</span>Dota 2</button>
+      <button data-page="cs"><span>◈</span>CS2</button>
+      <button data-page="football"><span>⚽</span>Футбол</button>
+      <button data-page="basketball"><span>🏀</span>Баскетбол</button>
+      <button data-page="results"><span>▤</span>Результаты</button>
+      <button data-page="favorites"><span>☆</span>Избранное</button>
+    </nav>
+    <div class="sidebar-note">
+      HuevoBet Sports Center<br>
+      Спортивная информация и результаты
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">SPORTS CENTER</div>
+        <h1 id="pageTitle">Главная</h1>
+        <div class="subtitle" id="today"></div>
+      </div>
+      <div class="clock" id="clock">--:--</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">WELCOME TO HUEVOBET</div>
+        <h2>Весь спорт в одном месте</h2>
+        <p>Матчи, турниры и результаты<br>в удобном формате</p>
+      </div>
+      <div class="hero-mark">H.</div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-icon">🔴</div>
+        <strong id="liveCount">—</strong>
+        <span>Матчей LIVE</span>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">🎮</div>
+        <strong>2</strong>
+        <span>Киберспорт дисциплины</span>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">🏆</div>
+        <strong>4</strong>
+        <span>Категории спорта</span>
+      </div>
+      <div class="stat">
+        <div class="stat-icon">☆</div>
+        <strong id="favCount">0</strong>
+        <span>Избранные команды</span>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2 id="listTitle">Спортивные события</h2>
+      <small id="listSubtitle">Часовой пояс: Amsterdam</small>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">Все</button>
+      <button class="filter" data-filter="dota">Dota 2</button>
+      <button class="filter" data-filter="cs">CS2</button>
+      <button class="filter" data-filter="football">Футбол</button>
+      <button class="filter" data-filter="basketball">Баскетбол</button>
+    </div>
+
+    <section class="match-list" id="matchList">
+      <div class="empty">
+        <div class="empty-icon">📡</div>
+        <h3>Спортивная лента готова</h3>
+        <p>Источник актуального расписания ещё не подключён. Здесь появятся проверенные матчи и результаты, когда мы добавим источник данных.</p>
+      </div>
+    </section>
+
+    <div class="footer">
+      HuevoBet Sports Center · Информационный спортивный проект<br>
+      Расписание и результаты требуют подключения источников данных
+    </div>
+  </main>
+</div>
+
+<nav class="mobile-nav" id="mobileNav">
+  <button class="active" data-page="home"><b>⌂</b>Главная</button>
+  <button data-page="live"><b>●</b>LIVE</button>
+  <button data-page="dota"><b>⚔</b>Киберспорт</button>
+  <button data-page="football"><b>⚽</b>Спорт</button>
+  <button data-page="favorites"><b>☆</b>Избранное</button>
 </nav>
-<main>
-<section id="home">
- <div class="hero">
-  <h1>Твоя игра начинается здесь</h1>
-  <p>Следи за матчами и проверяй свои прогнозы на виртуальных очках</p>
- </div>
- <h2 class="section-title">Популярные матчи</h2>
- <div id="homeMatches"></div>
-</section>
-
-<section id="live" class="hidden">
- <h2 class="section-title">LIVE матчи</h2>
- <p class="muted">Демонстрационные события — реальные результаты не подключены</p>
- <div id="liveMatches"></div>
-</section>
-
-<section id="esports" class="hidden">
- <h2 class="section-title">Киберспорт</h2>
- <div class="filters">
-  <button class="filter active" onclick="filterGames('all',this)">Все</button>
-  <button class="filter" onclick="filterGames('Dota 2',this)">Dota 2</button>
-  <button class="filter" onclick="filterGames('CS2',this)">CS2</button>
- </div>
- <div id="esportMatches"></div>
-</section>
-
-<section id="sports" class="hidden">
- <h2 class="section-title">Спорт</h2>
- <div id="sportMatches"></div>
-</section>
-
-<section id="coupon" class="hidden">
- <h2 class="section-title">Мои прогнозы</h2>
- <div class="card">
-  <h3>Твой купон</h3>
-  <div id="couponItems" class="muted">Ты пока не выбрал прогнозы</div>
-  <p>Количество очков</p>
-  <input id="stake" type="number" min="1" max="1000" value="100">
-  <button class="primary" onclick="placePrediction()">Подтвердить прогноз</button>
-  <p class="muted">Используются только виртуальные очки без денежной стоимости</p>
- </div>
- <h3 class="section-title">История</h3>
- <div id="history"></div>
-</section>
-
-<section id="profile" class="hidden">
- <h2 class="section-title">Профиль</h2>
- <div class="card">
-  <h2>Игрок HuevoBet</h2>
-  <p class="muted">Твой демонстрационный аккаунт</p>
-  <h1 style="color:#a5f05a"><span id="profileBalance">1000</span> очков</h1>
-  <p>Всего прогнозов: <b id="total">0</b></p>
-  <p class="muted">Очки не имеют денежной стоимости, не продаются и не обмениваются на деньги</p>
- </div>
-</section>
-</main>
-<footer>HuevoBet · Демонстрационная версия</footer>
 
 <script>
-const games=[
- {id:1,game:'Dota 2',a:'PARIVISION',b:'Team Liquid',time:'Сегодня · 18:00',odds:[1.75,2.10]},
- {id:2,game:'CS2',a:'NAVI',b:'FaZe',time:'Сегодня · 19:30',odds:[1.85,1.95]},
- {id:3,game:'Dota 2',a:'Aurora',b:'Gaimin Gladiators',time:'Завтра · 16:00',odds:[2.00,1.80]},
- {id:4,game:'CS2',a:'Vitality',b:'G2',time:'Завтра · 20:00',odds:[1.65,2.25]},
- {id:5,game:'Футбол',a:'Real Madrid',b:'Barcelona',time:'Завтра · 21:00',odds:[1.90,1.90]},
- {id:6,game:'Баскетбол',a:'Lakers',b:'Celtics',time:'Завтра · 23:00',odds:[1.80,2.00]}
-];
-let balance=Number(localStorage.getItem('hb_balance')||1000);
-let coupon=[];
-let history=JSON.parse(localStorage.getItem('hb_history')||'[]');
-let total=Number(localStorage.getItem('hb_total')||0);
+const pages = {
+  home: ["Главная", "Спортивные события"],
+  live: ["LIVE", "Матчи в прямом эфире"],
+  dota: ["Dota 2", "Матчи Dota 2"],
+  cs: ["CS2", "Матчи CS2"],
+  football: ["Футбол", "Футбольные матчи"],
+  basketball: ["Баскетбол", "Баскетбольные матчи"],
+  results: ["Результаты", "Завершённые матчи"],
+  favorites: ["Избранное", "Избранные команды"]
+};
 
-function save(){
- localStorage.setItem('hb_balance',balance);
- localStorage.setItem('hb_history',JSON.stringify(history));
- localStorage.setItem('hb_total',total);
- update();
+let currentPage = "home";
+let currentFilter = "all";
+let favorites = JSON.parse(localStorage.getItem("huevoFavorites") || "[]");
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    new Intl.DateTimeFormat("ru-RU", {
+      timeZone:"Europe/Amsterdam",
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit"
+    }).format(now) + " · AMS";
+
+  document.getElementById("today").textContent =
+    new Intl.DateTimeFormat("ru-RU", {
+      timeZone:"Europe/Amsterdam",
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    }).format(now);
 }
-function update(){
- document.getElementById('balance').textContent=balance;
- document.getElementById('profileBalance').textContent=balance;
- document.getElementById('total').textContent=total;
+updateClock();
+setInterval(updateClock,1000);
+
+function setPage(page) {
+  currentPage = page;
+  document.getElementById("pageTitle").textContent = pages[page][0];
+  document.getElementById("listTitle").textContent = pages[page][1];
+
+  document.querySelectorAll("[data-page]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === page);
+  });
+
+  render();
 }
-function card(g){
- return `<div class="match">
- <div class="match-top"><span>${g.game}</span><span>${g.time}</span></div>
- <div class="teams"><span>${g.a}</span><span class="vs">VS</span><span>${g.b}</span></div>
- <div class="odds">
- <button onclick="choose(${g.id},0)">${g.a}<small>${g.odds[0]}</small></button>
- <button onclick="choose(${g.id},1)">${g.b}<small>${g.odds[1]}</small></button>
- </div></div>`;
+
+document.querySelectorAll("[data-page]").forEach(btn => {
+  btn.addEventListener("click", () => setPage(btn.dataset.page));
+});
+
+document.querySelectorAll("[data-filter]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentFilter = btn.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+    render();
+  });
+});
+
+function render() {
+  document.getElementById("favCount").textContent = favorites.length;
+  document.getElementById("liveCount").textContent = "—";
+
+  const list = document.getElementById("matchList");
+  list.innerHTML = "";
+
+  let message = "Источник актуального расписания ещё не подключён. Здесь появятся проверенные матчи и результаты.";
+
+  if (currentPage === "live") {
+    message = "Сейчас нет подтверждённых данных о матчах в прямом эфире. После подключения источника здесь будут отображаться только действительно идущие матчи.";
+  } else if (currentPage === "favorites") {
+    message = favorites.length
+      ? "Избранные команды сохранены. Матчи появятся после подключения спортивного источника."
+      : "Пока нет избранных команд. Добавить команды можно будет из карточек матчей после подключения данных.";
+  } else if (currentPage === "results") {
+    message = "Здесь будут проверенные результаты завершённых матчей.";
+  }
+
+  const empty = document.createElement("div");
+  empty.className = "empty";
+  empty.innerHTML = `
+    <div class="empty-icon">📡</div>
+    <h3>Данные пока не подключены</h3>
+    <p>${message}</p>
+  `;
+  list.appendChild(empty);
 }
-function render(){
- document.getElementById('homeMatches').innerHTML=games.slice(0,4).map(card).join('');
- document.getElementById('liveMatches').innerHTML='<div class="card">Пока нет подключённых live-событий</div>';
- document.getElementById('esportMatches').innerHTML=games.filter(g=>g.game==='Dota 2'||g.game==='CS2').map(card).join('');
- document.getElementById('sportMatches').innerHTML=games.filter(g=>g.game==='Футбол'||g.game==='Баскетбол').map(card).join('');
- renderCoupon();renderHistory();update();
-}
-function showPage(id,btn){
- document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
- document.getElementById(id).classList.remove('hidden');
- document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');
-}
-function filterGames(type,btn){
- document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');
- document.getElementById('esportMatches').innerHTML=games.filter(g=>(g.game==='Dota 2'||g.game==='CS2')&&(type==='all'||g.game===type)).map(card).join('');
-}
-function choose(id,side){
- const g=games.find(x=>x.id===id);
- coupon=coupon.filter(x=>x.id!==id);
- coupon.push({id,game:g.game,match:g.a+' — '+g.b,team:side===0?g.a:g.b,odd:g.odds[side]});
- renderCoupon();
- showPage('coupon',document.querySelectorAll('nav button')[4]);
-}
-function renderCoupon(){
- const el=document.getElementById('couponItems');
- el.innerHTML=coupon.length?coupon.map(x=>`<p>${x.match}<br><span class="muted">${x.game} · Выбор: ${x.team} · Коэффициент ${x.odd}</span></p>`).join(''):'Ты пока не выбрал прогнозы';
-}
-function placePrediction(){
- const stake=Number(document.getElementById('stake').value);
- if(!coupon.length)return alert('Сначала выбери исход матча');
- if(!Number.isInteger(stake)||stake<1||stake>balance)return alert('Проверь количество очков');
- balance-=stake;
- total++;
- history.unshift({matches:coupon.map(x=>x.match+' → '+x.team),stake,date:new Date().toLocaleString('ru-RU')});
- coupon=[];
- save();renderCoupon();renderHistory();
- alert('Прогноз сохранён! Это демонстрационная запись. Результат матча не проверяется.');
-}
-function renderHistory(){
- document.getElementById('history').innerHTML=history.length?history.map(h=>`<div class="card"><b>${h.stake} виртуальных очков</b><p>${h.matches.join('<br>')}</p><span class="muted">${h.date}</span></div>`).join(''):'<p class="muted">История пока пуста</p>';
-}
+
 render();
 </script>
 </body>
