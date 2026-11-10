@@ -1,646 +1,488 @@
-from pathlib import Path
-
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#090b10">
 <title>HuevoBet — Sports Center</title>
 <style>
-:root {
-  --bg:#090b10; --panel:#11151e; --panel2:#171d28; --line:#242b38;
-  --text:#f3f5fa; --muted:#8993a5; --accent:#a4f05b; --red:#ff5d68;
-}
-* {box-sizing:border-box}
-body {margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
-button,input {font:inherit} button {cursor:pointer}
-.app {display:flex;min-height:100vh}
-.sidebar {
-  width:235px;padding:26px 17px;border-right:1px solid var(--line);
-  background:#0d1017;position:fixed;inset:0 auto 0 0;z-index:3;
-}
-.logo {font-size:25px;font-weight:900;letter-spacing:-1.5px;margin:3px 12px 35px}
-.logo span {color:var(--accent)}
-.menu-label {color:#647084;font-size:10px;font-weight:800;letter-spacing:1.7px;margin:25px 12px 10px}
-.nav {display:flex;flex-direction:column;gap:5px}
-.nav button {
-  border:0;background:transparent;color:#9aa4b5;text-align:left;padding:13px 12px;
-  border-radius:10px;font-size:14px;transition:.2s
-}
-.nav button:hover,.nav button.active {background:#1b242e;color:var(--accent)}
-.nav button span {display:inline-block;width:28px}
-.sidebar-note {
-  position:absolute;bottom:24px;left:17px;right:17px;color:#657084;font-size:11px;
-  line-height:1.6;padding:13px;border:1px solid var(--line);border-radius:10px
-}
-.main {width:calc(100% - 235px);margin-left:235px;padding:30px 38px 60px;max-width:1500px}
-.topbar {display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
-.eyebrow {color:var(--accent);font-size:11px;font-weight:800;letter-spacing:2px}
-h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
-.subtitle {color:var(--muted);font-size:13px}
-.clock {
-  color:#b4bdca;font-size:13px;background:var(--panel);border:1px solid var(--line);
-  padding:12px 15px;border-radius:10px;white-space:nowrap
-}
-.coin-wallet {
-  display:inline-flex;align-items:center;gap:7px;margin-top:9px;padding:9px 13px;
-  border:1px solid #465b32;border-radius:9px;background:#1c291b;color:var(--accent);
-  font-size:13px;font-weight:800
-}
-.hero {
-  background:linear-gradient(115deg,#1b2a20,#141b20 65%,#17202a);
-  border:1px solid #304132;border-radius:17px;padding:25px;margin-bottom:26px;
-  display:flex;align-items:center;justify-content:space-between;gap:20px
-}
-.hero h2 {font-size:22px;margin:8px 0}
-.hero p {color:#a8b6aa;font-size:13px;margin:0;line-height:1.6}
-.hero-mark {font-size:46px;color:var(--accent);font-weight:900}
-.stats {display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
-.stat {background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px}
-.stat-icon {font-size:19px}
-.stat strong {display:block;font-size:22px;margin:12px 0 5px}
-.stat span {color:var(--muted);font-size:12px}
-.section-title {display:flex;justify-content:space-between;align-items:center;margin:30px 0 15px;gap:10px}
-.section-title h2 {font-size:18px;margin:0}
-.section-title small {color:var(--muted)}
-.search-wrap {position:relative;margin:17px 0 12px}
-.search-icon {position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}
-.search-input {
-  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);
-  border-radius:11px;padding:14px 45px;outline:none;font-size:13px;transition:.2s
-}
-.search-input:focus {border-color:#668747}
-.search-input::placeholder {color:#697487}
-.search-clear {
-  position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;
-  background:transparent;color:var(--muted);font-size:18px;display:none
-}
-.search-clear.visible {display:block}
-.filters {display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 17px}
-.filter {background:var(--panel);border:1px solid var(--line);color:#aab3c1;border-radius:9px;padding:9px 14px;font-size:12px}
-.filter.active {background:#24321e;color:var(--accent);border-color:#506b38}
-.match-list {display:grid;gap:10px}
-.empty {border:1px dashed #343e4d;background:var(--panel);border-radius:14px;text-align:center;padding:40px 20px}
-.empty-icon {font-size:32px;margin-bottom:12px}
-.empty h3 {margin:0 0 8px;font-size:16px}
-.empty p {color:var(--muted);font-size:13px;line-height:1.6;max-width:420px;margin:0 auto}
-.match {
-  background:var(--panel);border:1px solid var(--line);padding:17px;border-radius:12px;
-  display:flex;align-items:center;justify-content:space-between;gap:15px;transition:.2s;cursor:pointer
-}
-.match:hover {border-color:#668747;background:#141a22}
-.match-info {display:flex;flex-direction:column;gap:8px;min-width:0}
-.match-league {color:var(--muted);font-size:11px}
-.match-teams {font-size:14px;font-weight:700;overflow-wrap:anywhere}
-.match-time {color:var(--accent);font-size:12px}
-.match-side {display:flex;align-items:center;gap:9px;flex-shrink:0}
-.tag {font-size:10px;color:var(--accent);background:#24321e;padding:6px 9px;border-radius:6px}
-.tag.live {color:#ff858d;background:#3a2028}
-.tag.past {color:#aab3c1;background:#252c37}
-.fav-button {background:transparent;border:1px solid var(--line);color:#aab3c1;border-radius:8px;padding:6px 10px;font-size:16px}
-.fav-button.selected {color:var(--accent)}
-.details-overlay {
-  position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);display:none;
-  align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)
-}
-.details-overlay.open {display:flex}
-.details-modal {
-  width:100%;max-width:540px;max-height:85vh;overflow:auto;background:#11151e;
-  border:1px solid #30394a;border-radius:17px;padding:23px;box-shadow:0 20px 80px #0009
-}
-.modal-top {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
-.modal-top h2 {font-size:17px;margin:0}
-.modal-close {width:35px;height:35px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);font-size:20px}
-.detail-league {color:var(--muted);font-size:12px;margin-bottom:17px}
-.detail-teams {
-  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
-  padding:22px 12px;background:#171d28;border:1px solid var(--line);border-radius:13px;text-align:center
-}
-.detail-team {font-size:14px;font-weight:800;overflow-wrap:anywhere}
-.detail-score {font-size:23px;font-weight:900;color:var(--accent);white-space:nowrap}
-.detail-status {margin-top:15px;text-align:center}
-.detail-grid {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.detail-item {background:#171d28;border:1px solid var(--line);padding:13px;border-radius:10px;min-width:0}
-.detail-item span {display:block;color:var(--muted);font-size:10px;margin-bottom:7px}
-.detail-item strong {font-size:12px;overflow-wrap:anywhere}
-.modal-note {color:var(--muted);font-size:11px;line-height:1.6;margin-top:17px}
-.quiz-box {margin-top:18px;padding:17px;background:#171d28;border:1px solid #30394a;border-radius:13px}
-.quiz-title {font-size:15px;font-weight:800;margin-bottom:8px}
-.quiz-description {color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
-.quiz-teams {display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
-.quiz-team {
-  min-width:0;padding:12px 8px;border:1px solid var(--line);background:#11151e;
-  color:var(--text);border-radius:9px;font-size:12px;font-weight:700;overflow-wrap:anywhere
-}
-.quiz-team.selected {border-color:var(--accent);background:#26351f;color:var(--accent)}
-.quiz-team:disabled {opacity:.65;cursor:default}
-.quiz-question {font-size:14px;font-weight:700;margin:12px 0;line-height:1.5}
-.quiz-answers {display:grid;gap:8px}
-.quiz-answer {padding:11px;border:1px solid var(--line);background:#11151e;color:#dce2ec;border-radius:8px;text-align:left;font-size:12px}
-.quiz-answer:hover:not(:disabled) {border-color:var(--accent)}
-.quiz-answer:disabled {cursor:default;opacity:.7}
-.quiz-message {margin-top:12px;font-size:12px;line-height:1.5;color:var(--accent);min-height:18px}
-.quiz-history {margin-top:15px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.7}
-.footer {color:#606b7c;font-size:11px;text-align:center;margin-top:40px;line-height:1.7}
-.mobile-nav {display:none}
-@media(max-width:900px) {.main {padding:25px 22px}.stats {grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px) {
-  .sidebar {display:none}
-  .main {width:100%;margin:0;padding:20px 15px 95px}
-  .topbar {align-items:flex-start}
-  h1 {font-size:25px}
-  .clock {font-size:10px;padding:9px}
-  .hero {padding:19px}
-  .hero h2 {font-size:19px}
-  .hero-mark {font-size:34px}
-  .stats {gap:9px}
-  .stat {padding:13px}
-  .stat strong {font-size:19px}
-  .match {align-items:flex-start}
-  .match-side {flex-direction:column;align-items:flex-end}
-  .mobile-nav {
-    display:flex;position:fixed;z-index:5;bottom:0;left:0;right:0;background:#11151e;
-    border-top:1px solid var(--line);justify-content:space-around;
-    padding:10px 4px calc(10px + env(safe-area-inset-bottom))
+  :root {
+    --bg: #0a0e27;
+    --surface: #111633;
+    --surface-2: #1a1f3a;
+    --surface-3: #2a2f5a;
+    --line: #2a2f5a;
+    --muted: #8892b0;
+    --fg: #ffffff;
+    --accent: #ffcc00;
+    --on-accent: #000000;
+    --green: #4caf50;
+    --red: #f44336;
   }
-  .mobile-nav button {background:transparent;border:0;color:#8d98a9;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:5px}
-  .mobile-nav button.active {color:var(--accent)}
-  .mobile-nav b {font-size:18px}
-  .details-modal {padding:17px}
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body { background: var(--bg); color: var(--fg); min-height: 100vh; padding-bottom: 80px; }
+
+  header { background: var(--surface); padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); }
+  header h1 { color: var(--accent); font-size: 24px; letter-spacing: 2px; }
+  .wallet-bar { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .balance-card { display: flex; align-items: center; gap: 8px; background: var(--surface-2); padding: 8px 14px; border-radius: 12px; border: 1px solid var(--line); }
+  .balance-card .coin { font-size: 22px; }
+  .balance-card .amount { font-size: 20px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .topup-btn { background: var(--accent); color: var(--on-accent); border: none; padding: 8px 16px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 14px; }
+  .topup-btn:hover { background: #ffd633; }
+
+  .top-menu { display: flex; gap: 4px; background: var(--surface); padding: 8px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+  .top-menu button { background: transparent; color: var(--muted); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; white-space: nowrap; transition: all .2s; }
+  .top-menu button:hover { color: var(--fg); background: var(--surface-2); }
+  .top-menu button.active { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 15px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+
+  .welcome { text-align: center; padding: 20px 15px; }
+  .welcome h2 { color: var(--accent); font-size: 22px; margin-bottom: 8px; }
+  .welcome p { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+  .stat { background: var(--surface-2); padding: 12px; border-radius: 10px; text-align: center; }
+  .stat .val { font-size: 22px; font-weight: 900; color: var(--accent); }
+  .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filters button { background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+  .filters button.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 700; }
+
+  .match-card { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .match-info { flex: 1; min-width: 180px; }
+  .match-info .sport { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .match-info .teams { font-size: 15px; margin: 4px 0; }
+  .match-info .tournament { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .match-info .time { font-size: 11px; color: var(--muted); }
+  .coeffs { display: flex; gap: 5px; }
+  .coeffs button { background: var(--surface-3); color: var(--fg); border: 1px solid var(--line); padding: 8px 11px; border-radius: 6px; cursor: pointer; min-width: 55px; font-size: 13px; font-weight: 600; }
+  .coeffs button:hover { background: var(--accent); color: var(--on-accent); }
+
+  .bet-slip { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--surface); padding: 15px; border-top: 2px solid var(--accent); display: none; z-index: 50; }
+  .bet-slip.show { display: block; }
+  .bet-slip input { width: 110px; padding: 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); font-weight: bold; }
+  .bet-slip .confirm { background: var(--accent); color: var(--on-accent); border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+  .bet-slip .cancel { background: #444; color: #fff; border: none; padding: 10px 14px; border-radius: 6px; cursor: pointer; }
+
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid var(--line); z-index: 40; }
+  .bottom-nav button { background: none; border: none; color: var(--muted); font-size: 10px; cursor: pointer; padding: 4px 8px; line-height: 1.3; }
+  .bottom-nav button.active { color: var(--accent); }
+  .bottom-nav button .icon { font-size: 18px; display: block; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; z-index: 100; padding: 15px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--line); }
+  .modal-header h3 { color: var(--accent); font-size: 18px; }
+  .modal-close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; line-height: 1; }
+  .modal-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+  .modal-balance { display: flex; justify-content: space-between; align-items: center; background: var(--surface); padding: 12px; border-radius: 12px; border: 1px solid var(--line); }
+  .modal-balance .lbl { font-size: 12px; color: var(--muted); }
+  .modal-balance .val { font-size: 24px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .modal-tabs { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 12px; }
+  .modal-tabs button { flex: 1; padding: 8px; background: transparent; border: none; color: var(--muted); font-weight: 600; cursor: pointer; border-radius: 8px; font-size: 13px; }
+  .modal-tabs button.active { background: var(--surface-3); color: var(--fg); }
+  .amount-input { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 18px; font-weight: bold; color: var(--fg); outline: none; }
+  .amount-input:focus { border-color: var(--accent); }
+  .quick-amounts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quick-amounts button { background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .quick-amounts button:hover { background: var(--surface-3); }
+  .receive-info { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+  .receive-info b { color: var(--accent); }
+  .submit-btn { background: var(--accent); color: var(--on-accent); border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+  .submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .rate-info { font-size: 12px; color: var(--muted); }
+  .rate-info summary { cursor: pointer; }
+  .rate-info p { margin-top: 6px; line-height: 1.5; }
+
+  .bet-history { max-height: 400px; overflow-y: auto; }
+  .bet-item { padding: 10px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .win { color: var(--green); font-weight: bold; }
+  .lose { color: var(--red); }
+  .pending { color: var(--accent); }
+
+  footer { text-align: center; padding: 20px 15px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+
+  .debug { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; max-height: 150px; overflow-y: auto; border-radius: 6px; margin-top: 10px; }
+
+  .hidden { display: none !important; }
+
+  .sync-btn { background: var(--surface-3); color: var(--fg); border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 10px; }
+  .sync-btn:hover { background: var(--accent); color: var(--on-accent); }
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="logo">HUEVO<span>BET</span></div>
-    <div class="menu-label">МЕНЮ</div>
-    <nav class="nav">
-      <button class="active" data-page="home"><span>⌂</span>Главная</button>
-      <button data-page="live"><span>●</span>LIVE</button>
-      <button data-page="dota"><span>⚔</span>Dota 2</button>
-      <button data-page="cs"><span>◈</span>CS2</button>
-      <button data-page="football"><span>⚽</span>Футбол</button>
-      <button data-page="basketball"><span>🏀</span>Баскетбол</button>
-      <button data-page="results"><span>▤</span>Результаты</button>
-      <button data-page="favorites"><span>☆</span>Избранное</button>
-    </nav>
-    <div class="sidebar-note">HuevoBet Sports Center<br>Спортивная информация и результаты</div>
-  </aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">SPORTS CENTER</div>
-        <h1 id="pageTitle">Главная</h1>
-        <div class="subtitle" id="today"></div>
-      </div>
-      <div>
-        <div class="clock" id="clock">--:--</div>
-        <div class="coin-wallet">🪙 <span id="coinBalance">0</span> монет</div>
-      </div>
-    </header>
-
-    <section class="hero">
-      <div>
-        <div class="eyebrow">WELCOME TO HUEVOBET</div>
-        <h2>Весь спорт в одном месте</h2>
-        <p>Матчи, турниры и результаты<br>в удобном формате</p>
-      </div>
-      <div class="hero-mark">H.</div>
-    </section>
-
-    <section class="stats">
-      <div class="stat"><div class="stat-icon">🔴</div><strong id="liveCount">—</strong><span>Матчей LIVE</span></div>
-      <div class="stat"><div class="stat-icon">🎮</div><strong>2</strong><span>Киберспорт дисциплины</span></div>
-      <div class="stat"><div class="stat-icon">🏆</div><strong>4</strong><span>Категории спорта</span></div>
-      <div class="stat"><div class="stat-icon">☆</div><strong id="favCount">0</strong><span>Избранные команды</span></div>
-    </section>
-
-    <div class="section-title">
-      <h2 id="listTitle">Спортивные события</h2>
-      <small>Часовой пояс: Amsterdam</small>
+<header>
+  <h1>🥚 HUEVO BET</h1>
+  <div class="wallet-bar">
+    <div class="balance-card">
+      <span class="coin">🪙</span>
+      <span class="amount" id="balance">0</span>
     </div>
+    <button class="topup-btn" onclick="openTopup()">+ Пополнить</button>
+    <button class="sync-btn" onclick="syncMatches()">🔄 Обновить матчи</button>
+  </div>
+</header>
 
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input class="search-input" id="searchInput" type="search" placeholder="Найти команду, турнир или матч..." autocomplete="off">
-      <button class="search-clear" id="searchClear" type="button">×</button>
-    </div>
-
-    <div class="filters">
-      <button class="filter active" data-filter="all">Все</button>
-      <button class="filter" data-filter="dota">Dota 2</button>
-      <button class="filter" data-filter="cs">CS2</button>
-    </div>
-
-    <section class="match-list" id="matchList">
-      <div class="empty"><div class="empty-icon">📡</div><h3>Загружаем спортивные данные</h3><p>Подключаем расписание и результаты матчей</p></div>
-    </section>
-
-    <div class="footer">
-      HuevoBet Sports Center · Информационный спортивный проект<br>
-      Источник данных: PandaScore · Время: Europe/Amsterdam<br>
-      Игровые монеты предназначены только для викторины и не имеют денежной стоимости
-    </div>
-  </main>
-</div>
-
-<nav class="mobile-nav">
-  <button class="active" data-page="home"><b>⌂</b>Главная</button>
-  <button data-page="live"><b>●</b>LIVE</button>
-  <button data-page="dota"><b>⚔</b>Киберспорт</button>
-  <button data-page="results"><b>▤</b>Результаты</button>
-  <button data-page="favorites"><b>☆</b>Избранное</button>
+<nav class="top-menu">
+  <button class="active" onclick="showTab('home', this)">⌂ Главная</button>
+  <button onclick="showTab('live', this)">● LIVE</button>
+  <button onclick="showTab('bets', this)">💰 Ставки</button>
+  <button onclick="showTab('cyber', this)">⚔ Киберспорт</button>
+  <button onclick="showTab('results', this)">▤ Результаты</button>
+  <button onclick="showTab('favs', this)">☆ Избранное</button>
 </nav>
 
-<div class="details-overlay" id="detailsOverlay">
-  <section class="details-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-top">
-      <h2 id="modalTitle">Информация о матче</h2>
-      <button class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+<div class="container">
+
+  <div id="tab-home">
+    <div class="card welcome">
+      <h2>WELCOME TO HUEVOBET</h2>
+      <p>Реальные матчи · Виртуальные ставки<br>Данные из PandaScore API</p>
+      <div class="stats">
+        <div class="stat"><div class="val" id="stat-live">0</div><div class="lbl">🔴 Матчей</div></div>
+        <div class="stat"><div class="val" id="stat-cyber">0</div><div class="lbl">🎮 Киберспорт</div></div>
+        <div class="stat"><div class="val" id="stat-sports">4</div><div class="lbl">🏆 Категории</div></div>
+        <div class="stat"><div class="val" id="stat-bets">0</div><div class="lbl">💰 Моих ставок</div></div>
+      </div>
     </div>
-    <div id="modalContent"></div>
-  </section>
+
+    <h3 style="margin: 15px 0 10px; color: var(--accent);">📡 Спортивные события</h3>
+    <div class="filters">
+      <button class="active" onclick="filterSport('all', this)">Все</button>
+      <button onclick="filterSport('Dota 2', this)">⚔ Dota 2</button>
+      <button onclick="filterSport('CS2', this)">◈ CS2</button>
+      <button onclick="filterSport('Футбол', this)">⚽ Футбол</button>
+      <button onclick="filterSport('Баскетбол', this)">🏀 Баскетбол</button>
+    </div>
+    <div id="matches-list"></div>
+  </div>
+
+  <div id="tab-live" class="hidden"><div class="card"><h3>● LIVE матчи</h3><p style="color:var(--muted);margin-top:8px;">Скоро здесь будут трансляции</p></div></div>
+  <div id="tab-bets" class="hidden"><div class="card"><h3>💰 Мои ставки</h3><div id="my-bets-list" class="bet-history"></div></div></div>
+  <div id="tab-cyber" class="hidden"><div class="card"><h3>⚔ Киберспорт</h3><p style="color:var(--muted);margin-top:8px;">Dota 2 · CS2 — все матчи во вкладке "Главная"</p></div></div>
+  <div id="tab-results" class="hidden"><div class="card"><h3>▤ Результаты</h3><div id="results-list" class="bet-history"></div></div></div>
+  <div id="tab-favs" class="hidden"><div class="card"><h3>☆ Избранное</h3><p style="color:var(--muted);margin-top:8px;">Пока пусто</p></div></div>
+
+  <details style="margin-top:15px;">
+    <summary style="color:var(--muted);font-size:12px;cursor:pointer;">🐞 Debug log</summary>
+    <div class="debug" id="debug">[INIT] Загрузка...</div>
+  </details>
 </div>
 
+<div class="bet-slip" id="bet-slip">
+  <div id="slip-info" style="margin-bottom:10px;"></div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <input type="number" id="bet-amount" placeholder="Сумма" min="10">
+    <button class="confirm" onclick="confirmBet()">⚡ Ставка</button>
+    <button class="cancel" onclick="closeSlip()">✕</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="active" onclick="showTab('home', document.querySelector('.top-menu button'))"><span class="icon">⌂</span>Главная</button>
+  <button onclick="showTab('live', document.querySelectorAll('.top-menu button')[1])"><span class="icon">●</span>LIVE</button>
+  <button onclick="openTopup()"><span class="icon">💰</span>Копилка</button>
+  <button onclick="showTab('cyber', document.querySelectorAll('.top-menu button')[3])"><span class="icon">⚔</span>Кибер</button>
+  <button onclick="showTab('bets', document.querySelectorAll('.top-menu button')[2])"><span class="icon">▤</span>Ставки</button>
+</nav>
+
+<div class="modal-overlay" id="topup-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🪙 Копилка HuevoBet</h3>
+      <button class="modal-close" onclick="closeTopup()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-balance">
+        <div>
+          <div class="lbl">Баланс копилки</div>
+          <div style="font-size:11px;color:var(--muted);">Общий счёт сайта</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:22px;">🪙</span>
+          <span class="val" id="modal-balance">0</span>
+        </div>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="active" onclick="switchTopupTab('deposit', this)">Пополнить</button>
+        <button onclick="switchTopupTab('history', this)">История</button>
+      </div>
+
+      <div id="topup-form">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Сколько монет внести в копилку</label>
+        <input type="number" id="topup-amount" class="amount-input" inputmode="numeric" placeholder="100" min="1" max="100000">
+
+        <div class="quick-amounts" style="margin-top:10px;">
+          <button onclick="setTopup(10)">10</button>
+          <button onclick="setTopup(50)">50</button>
+          <button onclick="setTopup(100)">100</button>
+          <button onclick="setTopup(250)">250</button>
+          <button onclick="setTopup(500)">500</button>
+          <button onclick="setTopup(1000)">1 000</button>
+          <button onclick="setTopup(5000)">5 000</button>
+          <button onclick="setTopup(10000)">10 000</button>
+        </div>
+
+        <div class="receive-info" style="margin-top:12px;">
+          В копилку поступит: <b><span id="receive-amount">0</span> 🪙</b>
+        </div>
+
+        <button class="submit-btn" id="topup-submit" style="margin-top:12px;" onclick="doTopup()" disabled>
+          Пополнить копилку
+        </button>
+
+        <details class="rate-info" style="margin-top:8px;">
+          <summary>ℹ️ О копилке</summary>
+          <p>
+            Копилка — это общий виртуальный баланс сайта. Все ставки и выигрыши проходят через неё.<br>
+            • 1 монета = 1 монета в копилке (без комиссии)<br>
+            • За раз до 100 000 монет<br>
+            • Дневной лимит пополнения: 50 000 монет<br>
+            • Монеты не имеют реальной денежной стоимости
+          </p>
+        </details>
+      </div>
+
+      <div id="topup-history" class="hidden">
+        <div id="history-list" class="bet-history"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  HuevoBet Sports Center · Информационный спортивный проект<br>
+  Источник данных: PandaScore API · Игровые монеты предназначены только для развлечения
+</footer>
+
 <script>
-const pages = {
-  home:["Главная","Спортивные события"], live:["LIVE","Матчи в прямом эфире"],
-  dota:["Dota 2","Матчи Dota 2"], cs:["CS2","Матчи CS2"],
-  football:["Футбол","Футбольные матчи"], basketball:["Баскетбол","Баскетбольные матчи"],
-  results:["Результаты","Завершённые матчи"], favorites:["Избранное","Избранные команды"]
-};
+const API = "http://localhost:5000/api";
+let currentMatch = null, currentChoice = null, currentCoef = 0, currentFilter = "all";
 
-let currentPage = "home", currentFilter = "all", matchesData = null, searchQuery = "";
-let favorites = [];
-try {
-  favorites = JSON.parse(localStorage.getItem("huevoFavorites") || "[]");
-  if (!Array.isArray(favorites)) favorites = [];
-} catch { favorites = []; }
+function dbg(msg) {
+  const d = document.getElementById("debug");
+  const t = new Date().toLocaleTimeString();
+  d.innerHTML += `\n[${t}] ${msg}`;
+  d.scrollTop = d.scrollHeight;
+  console.log(`[HuevoBet] ${msg}`);
+}
 
-function safeStoredArray(key) {
+function showTab(name, btn) {
+  document.querySelectorAll("[id^=tab-]").forEach(t => t.classList.add("hidden"));
+  const tab = document.getElementById("tab-" + name);
+  if (tab) tab.classList.remove("hidden");
+
+  document.querySelectorAll(".top-menu button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+
+  dbg(`📂 Вкладка: ${name}`);
+  if (name === "bets") loadMyBets();
+  if (name === "results") loadResults();
+}
+
+async function loadBalance() {
   try {
-    const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch { return []; }
+    const r = await fetch(`${API}/wallet`);
+    const d = await r.json();
+    document.getElementById("balance").textContent = d.balance;
+    const mb = document.getElementById("modal-balance");
+    if (mb) mb.textContent = d.balance;
+    dbg(`💰 Баланс: ${d.balance}`);
+  } catch (e) {
+    dbg(`❌ Ошибка баланса: ${e}`);
+  }
 }
-let coinBalance = Math.max(0, Number(localStorage.getItem("huevoCoins") || 0));
-if (!Number.isFinite(coinBalance)) coinBalance = 0;
-let quizHistory = safeStoredArray("huevoQuizHistory");
-let completedQuizzes = safeStoredArray("huevoCompletedQuizzes");
 
-function updateCoinBalance() {
-  document.getElementById("coinBalance").textContent = coinBalance.toLocaleString("ru-RU");
+function openTopup() {
+  document.getElementById("topup-modal").classList.add("show");
+  loadBalance();
+  dbg("💰 Открыта модалка пополнения");
 }
-updateCoinBalance();
-
-function updateClock() {
-  const now = new Date();
-  document.getElementById("clock").textContent =
-    new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now) + " · AMS";
-  document.getElementById("today").textContent =
-    new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
+function closeTopup() {
+  document.getElementById("topup-modal").classList.remove("show");
 }
-updateClock();
-setInterval(updateClock,1000);
-
-function updateFilterButtons() {
-  document.querySelectorAll("[data-filter]").forEach(button => button.classList.toggle("active",button.dataset.filter === currentFilter));
+function switchTopupTab(tab, btn) {
+  document.querySelectorAll(".modal-tabs button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("topup-form").classList.toggle("hidden", tab !== "deposit");
+  document.getElementById("topup-history").classList.toggle("hidden", tab !== "history");
+  if (tab === "history") loadMyBets();
 }
-function setPage(page) {
-  if (!pages[page]) return;
-  currentPage = page; currentFilter = "all"; updateFilterButtons();
-  document.getElementById("pageTitle").textContent = pages[page][0];
-  document.getElementById("listTitle").textContent = pages[page][1];
-  document.querySelectorAll("[data-page]").forEach(button => button.classList.toggle("active",button.dataset.page === page));
-  render();
+function setTopup(v) {
+  document.getElementById("topup-amount").value = v;
+  updateReceive();
 }
-document.querySelectorAll("[data-page]").forEach(button => button.addEventListener("click",() => setPage(button.dataset.page)));
-document.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click",() => {
-  currentFilter = button.dataset.filter; updateFilterButtons(); render();
-}));
-
-const searchInput = document.getElementById("searchInput");
-const searchClear = document.getElementById("searchClear");
-searchInput.addEventListener("input",() => {
-  searchQuery = searchInput.value.trim().toLowerCase();
-  searchClear.classList.toggle("visible",searchQuery.length > 0); render();
-});
-searchClear.addEventListener("click",() => {
-  searchInput.value = ""; searchQuery = ""; searchClear.classList.remove("visible"); render(); searchInput.focus();
+function updateReceive() {
+  const v = parseFloat(document.getElementById("topup-amount").value) || 0;
+  document.getElementById("receive-amount").textContent = v.toLocaleString("ru-RU");
+  document.getElementById("topup-submit").disabled = v <= 0;
+}
+document.addEventListener("input", e => {
+  if (e.target.id === "topup-amount") updateReceive();
 });
 
-function getAllMatches() {
-  if (!matchesData || !matchesData.matches) return [];
-  const result = [];
-  Object.entries(matchesData.matches).forEach(([key,items]) => {
-    const game = key.startsWith("dota2") ? "dota" : key.startsWith("cs2") ? "cs" : "other";
-    const category = key.endsWith("running") ? "live" : key.endsWith("past") ? "past" : "upcoming";
-    if (!Array.isArray(items)) return;
-    items.forEach(match => result.push({...match,game,category}));
-  });
-  return result;
-}
-function teamNames(match) {
-  const names = (match.opponents || []).map(item => item.opponent?.name || "Неизвестная команда");
-  return [names[0] || "Команда 1",names[1] || "Команда 2"];
-}
-function formatDate(value) {
-  if (!value) return "Время не указано";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Время не указано";
-  return new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date);
-}
-function getScore(match,name) {
-  const opponent = (match.opponents || []).find(item => item.opponent?.name === name);
-  if (!opponent) return "—";
-  const result = (match.results || []).find(item => item.team_id === opponent.opponent?.id);
-  return result?.score ?? "—";
-}
-function saveFavorites() {
-  try { localStorage.setItem("huevoFavorites",JSON.stringify(favorites)); }
-  catch (error) { console.warn("Не удалось сохранить избранное",error); }
-}
-function toggleMatchFavorites(names) {
-  const allSelected = names.every(name => favorites.includes(name));
-  if (allSelected) favorites = favorites.filter(name => !names.includes(name));
-  else names.forEach(name => { if (!favorites.includes(name)) favorites.push(name); });
-  saveFavorites(); render();
-}
-function showEmpty(icon,title,message) {
-  const list = document.getElementById("matchList");
-  const empty = document.createElement("div"); empty.className = "empty";
-  const emoji = document.createElement("div"); emoji.className = "empty-icon"; emoji.textContent = icon;
-  const heading = document.createElement("h3"); heading.textContent = title;
-  const paragraph = document.createElement("p"); paragraph.textContent = message;
-  empty.append(emoji,heading,paragraph); list.append(empty);
-}
-function getMatchStatus(match) {
-  if (match.category === "live") return "LIVE";
-  if (match.category === "past") return "Завершён";
-  return "Предстоящий";
-}
-function getMatchGame(match) {
-  return match.game === "dota" ? "Dota 2" : match.game === "cs" ? "CS2" : "Неизвестно";
-}
-
-function persistQuizData() {
+async function doTopup() {
+  const amount = parseFloat(document.getElementById("topup-amount").value);
+  if (!amount || amount <= 0) { dbg("❌ Неверная сумма"); return; }
   try {
-    localStorage.setItem("huevoCoins",String(coinBalance));
-    localStorage.setItem("huevoCompletedQuizzes",JSON.stringify(completedQuizzes));
-    localStorage.setItem("huevoQuizHistory",JSON.stringify(quizHistory));
-  } catch (error) { console.warn("Не удалось сохранить данные викторины",error); }
+    const r = await fetch(`${API}/wallet/topup`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({amount})
+    });
+    const d = await r.json();
+    if (d.error) { alert(d.error); dbg(`❌ ${d.error}`); return; }
+    document.getElementById("balance").textContent = d.balance;
+    document.getElementById("modal-balance").textContent = d.balance;
+    document.getElementById("topup-amount").value = "";
+    updateReceive();
+    dbg(`✅ Копилка пополнена: +${amount} → ${d.balance}`);
+    alert(`Копилка пополнена на ${amount} 🪙\nНовый баланс: ${d.balance} 🪙`);
+  } catch (e) {
+    dbg(`❌ Ошибка пополнения: ${e}`);
+  }
 }
-function getQuizId(match,names) {
-  return String(match.id || `${names[0]}-${names[1]}-${match.begin_at || "unknown"}`);
-}
-function createQuiz(match,names) {
-  const questions = {
-    dota: {
-      question:"Сколько игроков находится в одной команде в стандартном матче Dota 2?",
-      answers:["3 игрока","5 игроков","6 игроков","7 игроков"], correct:1
-    },
-    cs: {
-      question:"Сколько игроков одной команды участвует в стандартном соревновательном матче CS2?",
-      answers:["4 игрока","5 игроков","6 игроков","8 игроков"], correct:1
+
+async function syncMatches() {
+  dbg("🔄 Синхронизация с PandaScore...");
+  try {
+    const r = await fetch(`${API}/sync`, {method: "POST"});
+    const d = await r.json();
+    if (d.ok) {
+      dbg(`✅ Синхронизация: ${d.added} новых матчей`);
+      alert(`Обновлено! Добавлено ${d.added} новых матчей`);
+      loadMatches();
     }
-  };
-  const question = questions[match.game];
-  if (!question) return null;
-
-  const quizId = getQuizId(match,names);
-  const alreadyCompleted = completedQuizzes.includes(quizId);
-  let selectedTeam = "";
-
-  const box = document.createElement("section"); box.className = "quiz-box";
-  const title = document.createElement("div"); title.className = "quiz-title"; title.textContent = "🎮 Игровое задание";
-  const description = document.createElement("div"); description.className = "quiz-description";
-  description.textContent = "Выбери команду для оформления задания и ответь на вопрос. Выбор команды не влияет на результат матча.";
-  const teams = document.createElement("div"); teams.className = "quiz-teams";
-  const message = document.createElement("div"); message.className = "quiz-message";
-  const questionTitle = document.createElement("div"); questionTitle.className = "quiz-question"; questionTitle.textContent = question.question;
-  const answers = document.createElement("div"); answers.className = "quiz-answers";
-  const history = document.createElement("div"); history.className = "quiz-history";
-
-  function renderHistory() {
-    history.replaceChildren();
-    const heading = document.createElement("strong"); heading.textContent = "Последние награды";
-    history.append(heading);
-    const recent = quizHistory.slice(-3).reverse();
-    if (!recent.length) {
-      const empty = document.createElement("div"); empty.textContent = "Пока наград нет"; history.append(empty); return;
-    }
-    recent.forEach(entry => {
-      const line = document.createElement("div");
-      line.textContent = `+${entry.reward} монет · ${entry.team}`;
-      history.append(line);
-    });
+  } catch (e) {
+    dbg(`❌ Ошибка синхронизации: ${e}`);
   }
-
-  names.forEach(name => {
-    const button = document.createElement("button");
-    button.className = "quiz-team"; button.type = "button"; button.textContent = name;
-    button.disabled = alreadyCompleted;
-    button.addEventListener("click",() => {
-      if (completedQuizzes.includes(quizId)) return;
-      selectedTeam = name;
-      teams.querySelectorAll("button").forEach(item => item.classList.remove("selected"));
-      button.classList.add("selected");
-      message.textContent = `Выбрана команда: ${name}`;
-    });
-    teams.append(button);
-  });
-
-  question.answers.forEach((answer,index) => {
-    const button = document.createElement("button");
-    button.className = "quiz-answer"; button.type = "button"; button.textContent = answer;
-    button.disabled = alreadyCompleted;
-    button.addEventListener("click",() => {
-      if (completedQuizzes.includes(quizId)) return;
-      if (!selectedTeam) { message.textContent = "Сначала выбери команду"; return; }
-
-      if (index === question.correct) {
-        coinBalance += 10;
-        completedQuizzes.push(quizId);
-        quizHistory.push({team:selectedTeam,reward:10,date:new Date().toISOString(),match: names.join(" — ")});
-        persistQuizData(); updateCoinBalance();
-        message.textContent = "Верно! Ты получил 10 игровых монет 🎉";
-      } else {
-        message.textContent = "Ответ неверный. Попробуй ещё раз!";
-        button.disabled = true;
-        return;
-      }
-      answers.querySelectorAll("button").forEach(item => { item.disabled = true; });
-      teams.querySelectorAll("button").forEach(item => { item.disabled = true; });
-      renderHistory();
-    });
-    answers.append(button);
-  });
-
-  if (alreadyCompleted) message.textContent = "Ты уже выполнил задание для этого матча";
-  renderHistory();
-  box.append(title,description,teams,questionTitle,answers,message,history);
-  return box;
-}
-
-function openMatchDetails(match) {
-  const names = teamNames(match), gameName = getMatchGame(match), status = getMatchStatus(match);
-  const isScoreAvailable = match.category === "live" || match.category === "past";
-  const content = document.getElementById("modalContent"); content.replaceChildren();
-
-  const league = document.createElement("div"); league.className = "detail-league";
-  league.textContent = `${match.league?.name || "Турнир не указан"} · ${gameName}`;
-  const teams = document.createElement("div"); teams.className = "detail-teams";
-  const teamA = document.createElement("div"); teamA.className = "detail-team"; teamA.textContent = names[0];
-  const score = document.createElement("div"); score.className = "detail-score";
-  score.textContent = isScoreAvailable ? `${getScore(match,names[0])} : ${getScore(match,names[1])}` : "VS";
-  const teamB = document.createElement("div"); teamB.className = "detail-team"; teamB.textContent = names[1];
-  teams.append(teamA,score,teamB);
-
-  const statusWrap = document.createElement("div"); statusWrap.className = "detail-status";
-  const statusTag = document.createElement("span"); statusTag.className = "tag";
-  if (match.category === "live") statusTag.classList.add("live");
-  if (match.category === "past") statusTag.classList.add("past");
-  statusTag.textContent = status; statusWrap.append(statusTag);
-
-  const grid = document.createElement("div"); grid.className = "detail-grid";
-  const details = [
-    ["Дисциплина",gameName],
-    ["Турнир",match.tournament?.name || match.league?.name || "Не указан"],
-    ["Серия",match.serie?.full_name || match.serie?.name || "Не указана"],
-    ["Сезон",match.season?.name || "Не указан"],
-    ["Начало матча",formatDate(match.begin_at)],
-    ["Окончание",formatDate(match.end_at)]
-  ];
-  details.forEach(([label,value]) => {
-    const item = document.createElement("div"); item.className = "detail-item";
-    const title = document.createElement("span"); title.textContent = label;
-    const text = document.createElement("strong"); text.textContent = value;
-    item.append(title,text); grid.append(item);
-  });
-
-  const quiz = createQuiz(match,names);
-  const note = document.createElement("div"); note.className = "modal-note";
-  note.textContent = match.id ? `ID матча: ${match.id} · Информация получена из PandaScore` : "Информация получена из PandaScore";
-  if (quiz) content.append(league,teams,statusWrap,grid,quiz,note);
-  else content.append(league,teams,statusWrap,grid,note);
-
-  document.getElementById("detailsOverlay").classList.add("open");
-  document.body.style.overflow = "hidden";
-  document.getElementById("modalClose").focus();
-}
-function closeMatchDetails() {
-  document.getElementById("detailsOverlay").classList.remove("open");
-  document.body.style.overflow = "";
-}
-document.getElementById("modalClose").addEventListener("click",closeMatchDetails);
-document.getElementById("detailsOverlay").addEventListener("click",event => {
-  if (event.target.id === "detailsOverlay") closeMatchDetails();
-});
-document.addEventListener("keydown",event => { if (event.key === "Escape") closeMatchDetails(); });
-
-function render() {
-  const all = getAllMatches();
-  document.getElementById("liveCount").textContent = all.filter(match => match.category === "live").length;
-  document.getElementById("favCount").textContent = favorites.length;
-  let filtered = all;
-
-  if (currentPage === "live") filtered = all.filter(match => match.category === "live");
-  else if (currentPage === "results") filtered = all.filter(match => match.category === "past");
-  else if (currentPage === "dota") filtered = all.filter(match => match.game === "dota");
-  else if (currentPage === "cs") filtered = all.filter(match => match.game === "cs");
-  else if (currentPage === "favorites") filtered = all.filter(match => teamNames(match).some(name => favorites.includes(name)));
-  else if (currentPage === "football" || currentPage === "basketball") filtered = [];
-  else if (currentPage === "home") filtered = all.filter(match => match.category === "live" || match.category === "upcoming");
-
-  if (currentFilter === "dota") filtered = filtered.filter(match => match.game === "dota");
-  else if (currentFilter === "cs") filtered = filtered.filter(match => match.game === "cs");
-
-  if (searchQuery) {
-    filtered = filtered.filter(match => {
-      const searchable = `${teamNames(match).join(" ")} ${match.league?.name || ""} ${match.tournament?.name || ""} ${getMatchGame(match)}`.toLowerCase();
-      return searchable.includes(searchQuery);
-    });
-  }
-
-  const list = document.getElementById("matchList"); list.replaceChildren();
-  if (!matchesData) { showEmpty("📡","Загружаем матчи","Получаем спортивные данные..."); return; }
-  if (!filtered.length) {
-    if (searchQuery) showEmpty("🔎","Ничего не найдено","Попробуй изменить поисковый запрос.");
-    else if (currentPage === "football" || currentPage === "basketball") showEmpty("🏟️","Источник ещё не подключён","Данные для этого вида спорта пока не подключены.");
-    else if (currentPage === "favorites" && favorites.length === 0) showEmpty("☆","Избранное пусто","Добавляй команды в избранное с помощью звёздочки на карточке.");
-    else showEmpty("📭","Матчей пока нет","В этой категории сейчас нет событий. Попробуй проверить позже.");
-    return;
-  }
-
-  filtered.sort((a,b) => {
-    if (a.category === "live" && b.category !== "live") return -1;
-    if (b.category === "live" && a.category !== "live") return 1;
-    if (a.category === "past" && b.category === "past") return new Date(b.begin_at || 0) - new Date(a.begin_at || 0);
-    return new Date(a.begin_at || 0) - new Date(b.begin_at || 0);
-  });
-
-  filtered.forEach(match => {
-    const names = teamNames(match);
-    const card = document.createElement("article"); card.className = "match"; card.tabIndex = 0;
-    card.setAttribute("role","button");
-    card.setAttribute("aria-label",`Подробнее о матче ${names[0]} против ${names[1]}`);
-    const info = document.createElement("div"); info.className = "match-info";
-    const league = document.createElement("div"); league.className = "match-league";
-    league.textContent = `${match.league?.name || "Турнир не указан"} · ${getMatchGame(match)}`;
-    const teams = document.createElement("div"); teams.className = "match-teams"; teams.textContent = `${names[0]}  —  ${names[1]}`;
-    const time = document.createElement("div"); time.className = "match-time";
-    time.textContent = match.category === "past" || match.category === "live"
-      ? `Счёт: ${getScore(match,names[0])} : ${getScore(match,names[1])}`
-      : formatDate(match.begin_at);
-
-    const side = document.createElement("div"); side.className = "match-side";
-    const tag = document.createElement("span"); tag.className = "tag";
-    if (match.category === "live") { tag.classList.add("live"); tag.textContent = "● LIVE"; }
-    else if (match.category === "past") { tag.classList.add("past"); tag.textContent = "Завершён"; }
-    else tag.textContent = "Предстоящий";
-
-    const fav = document.createElement("button"); fav.className = "fav-button";
-    const isFavorite = names.every(name => favorites.includes(name));
-    fav.textContent = isFavorite ? "★" : "☆"; fav.classList.toggle("selected",isFavorite);
-    fav.title = "Добавить или убрать команды из избранного"; fav.setAttribute("aria-label",fav.title);
-    fav.addEventListener("click",event => { event.stopPropagation(); toggleMatchFavorites(names); });
-
-    card.addEventListener("click",() => openMatchDetails(match));
-    card.addEventListener("keydown",event => {
-      if (event.target === card && (event.key === "Enter" || event.key === " ")) {
-        event.preventDefault(); openMatchDetails(match);
-      }
-    });
-    info.append(league,teams,time); side.append(tag,fav); card.append(info,side); list.append(card);
-  });
 }
 
 async function loadMatches() {
   try {
-    const response = await fetch("./data/matches.json?t=" + Date.now(),{cache:"no-store"});
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const data = await response.json();
-    if (!data || !data.matches) throw new Error("Некорректный формат данных");
-    matchesData = data; render();
-    console.log("HuevoBet: данные обновлены",data.updated_at);
-  } catch (error) {
-    console.error("HuevoBet data error:",error);
-    if (!matchesData) {
-      const list = document.getElementById("matchList"); list.replaceChildren();
-      showEmpty("⚠️","Не удалось загрузить матчи","Проверь подключение источника данных и попробуй обновить страницу.");
+    const url = currentFilter === "all" ? `${API}/matches` : `${API}/matches?sport=${encodeURIComponent(currentFilter)}`;
+    const r = await fetch(url);
+    const matches = await r.json();
+    const box = document.getElementById("matches-list");
+    document.getElementById("stat-live").textContent = matches.length;
+
+    let cyberCount = matches.filter(m => m.sport === "Dota 2" || m.sport === "CS2").length;
+    document.getElementById("stat-cyber").textContent = cyberCount;
+
+    if (matches.length === 0) {
+      box.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);">
+        Нет доступных матчей<br>
+        <button onclick="syncMatches()" style="margin-top:10px;background:var(--accent);color:var(--on-accent);border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">🔄 Обновить из PandaScore</button>
+      </div>`;
+      return;
     }
+    box.innerHTML = matches.map(m => {
+      const startTime = new Date(m.start_time).toLocaleString("ru-RU", {
+        day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+      });
+      return `
+      <div class="card match-card">
+        <div class="match-info">
+          <div class="sport">${m.sport}</div>
+          <div class="teams"><b>${m.team1}</b> vs <b>${m.team2}</b></div>
+          ${m.tournament ? `<div class="tournament">🏆 ${m.tournament}</div>` : ""}
+          <div class="time">🕐 ${startTime}</div>
+        </div>
+        <div class="coeffs">
+          ${m.coef1 ? `<button onclick="openSlip(${m.id},'team1','${m.team1}',${m.coef1})">П1 ${m.coef1}</button>` : ""}
+          ${m.coefX ? `<button onclick="openSlip(${m.id},'draw','Ничья',${m.coefX})">X ${m.coefX}</button>` : ""}
+          ${m.coef2 ? `<button onclick="openSlip(${m.id},'team2','${m.team2}',${m.coef2})">П2 ${m.coef2}</button>` : ""}
+        </div>
+      </div>
+    `}).join("");
+    dbg(`🎮 Матчей: ${matches.length}`);
+  } catch (e) {
+    dbg(`❌ Ошибка матчей: ${e}`);
+    document.getElementById("matches-list").innerHTML =
+      `<div class="card" style="color:var(--red);">⚠ Не удалось загрузить матчи. Проверь, запущен ли python app.py</div>`;
   }
 }
+
+function filterSport(sport, btn) {
+  currentFilter = sport;
+  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  dbg(`🔍 Фильтр: ${sport}`);
+  loadMatches();
+}
+
+function openSlip(matchId, choice, name, coef) {
+  currentMatch = matchId; currentChoice = choice; currentCoef = coef;
+  document.getElementById("slip-info").innerHTML =
+    `<b>${name}</b> @ <span style="color:var(--accent);font-weight:900;">${coef}</span>`;
+  document.getElementById("bet-slip").classList.add("show");
+  dbg(`🎯 Выбор: ${name} @ ${coef}`);
+}
+function closeSlip() { document.getElementById("bet-slip").classList.remove("show"); }
+
+async function confirmBet() {
+  const amount = parseFloat(document.getElementById("bet-amount").value);
+  if (!amount || amount <= 0) { dbg("❌ Неверная сумма"); return; }
+  try {
+    const r = await fetch(`${API}/bet`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({match_id: currentMatch, choice: currentChoice, amount})
+    });
+    const d = await r.json();
+    if (d.error) { alert(d.error); dbg(`❌ ${d.error}`); return; }
+    dbg(`✅ Ставка ${d.bet_amount} @ ${d.coef} → ${d.potential_win}`);
+    alert(`Ставка принята!\nВозможный выигрыш: ${d.potential_win} 🪙`);
+    document.getElementById("balance").textContent = d.new_balance;
+    document.getElementById("modal-balance").textContent = d.new_balance;
+    closeSlip();
+    document.getElementById("bet-amount").value = "";
+    document.getElementById("stat-bets").textContent = parseInt(document.getElementById("stat-bets").textContent) + 1;
+  } catch (e) {
+    dbg(`❌ Ошибка ставки: ${e}`);
+  }
+}
+
+async function loadMyBets() {
+  try {
+    const r = await fetch(`${API}/bets`);
+    const bets = await r.json();
+    const box = document.getElementById("history-list");
+    const box2 = document.getElementById("my-bets-list");
+    const html = bets.length === 0
+      ? `<div style="text-align:center;color:var(--muted);padding:20px;">Пока нет операций</div>`
+      : bets.map(b => `
+        <div class="bet-item">
+          <b>${b.sport}</b>: ${b.team1} vs ${b.team2} — <i>${b.choice}</i><br>
+          ${b.amount} 🪙 @ ${b.coef} →
+          <span class="${b.result}">${b.result === "win" ? "✓ +" + b.payout : b.result === "lose" ? "✗ проигрыш" : "⏳ ожидание"}</span>
+        </div>`).join("");
+    if (box) box.innerHTML = html;
+    if (box2) box2.innerHTML = html;
+    dbg(`📜 Операций: ${bets.length}`);
+  } catch (e) { dbg(`❌ Ошибка истории: ${e}`); }
+}
+
+async function loadResults() {
+  try {
+    const r = await fetch(`${API}/matches`);
+    const all = await r.json();
+    const box = document.getElementById("results-list");
+    box.innerHTML = `<div style="color:var(--muted);">Завершённых матчей пока нет. Розыгрыш через /api/resolve/&lt;id&gt;</div>`;
+  } catch (e) { dbg(`❌ ${e}`); }
+}
+
+dbg("🚀 HuevoBet запускается...");
+loadBalance();
 loadMatches();
-setInterval(loadMatches,5 * 60 * 1000);
+setInterval(loadBalance, 15000);
 </script>
+
 </body>
 </html>
-'''
-
-path = Path("/mnt/data/index.html")
-path.write_text(html, encoding="utf-8")
-print(f"Готово: {path.name} — {path.stat().st_size:,} байт")
