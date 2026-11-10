@@ -1,3 +1,4 @@
+
 name: Update HuevoBet matches
 
 on:
@@ -19,6 +20,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,12 +68,14 @@ jobs:
                       "User-Agent": "HuevoBet"
                   }
               )
+
               with urllib.request.urlopen(request, timeout=30) as response:
                   result["matches"][name] = json.load(response)
 
               print(f"{name}: {len(result['matches'][name])} matches")
 
           os.makedirs("data", exist_ok=True)
+
           with open("data/matches.json", "w", encoding="utf-8") as file:
               json.dump(result, file, ensure_ascii=False)
 
