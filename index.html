@@ -6,17 +6,9 @@
 <title>HuevoBet — Sports Center</title>
 <style>
   :root {
-    --bg: #0a0e27;
-    --surface: #111633;
-    --surface-2: #1a1f3a;
-    --surface-3: #2a2f5a;
-    --line: #2a2f5a;
-    --muted: #8892b0;
-    --fg: #ffffff;
-    --accent: #ffcc00;
-    --on-accent: #000000;
-    --green: #4caf50;
-    --red: #f44336;
+    --bg: #0a0e27; --surface: #111633; --surface-2: #1a1f3a; --surface-3: #2a2f5a;
+    --line: #2a2f5a; --muted: #8892b0; --fg: #ffffff; --accent: #ffcc00;
+    --on-accent: #000000; --green: #4caf50; --red: #f44336;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
   body { background: var(--bg); color: var(--fg); min-height: 100vh; padding-bottom: 80px; }
@@ -104,13 +96,8 @@
   .pending { color: var(--accent); }
 
   footer { text-align: center; padding: 20px 15px; color: var(--muted); font-size: 11px; line-height: 1.6; }
-
   .debug { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; max-height: 150px; overflow-y: auto; border-radius: 6px; margin-top: 10px; }
-
   .hidden { display: none !important; }
-
-  .sync-btn { background: var(--surface-3); color: var(--fg); border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 10px; }
-  .sync-btn:hover { background: var(--accent); color: var(--on-accent); }
 </style>
 </head>
 <body>
@@ -123,7 +110,6 @@
       <span class="amount" id="balance">0</span>
     </div>
     <button class="topup-btn" onclick="openTopup()">+ Пополнить</button>
-    <button class="sync-btn" onclick="syncMatches()">🔄 Обновить матчи</button>
   </div>
 </header>
 
@@ -133,19 +119,17 @@
   <button onclick="showTab('bets', this)">💰 Ставки</button>
   <button onclick="showTab('cyber', this)">⚔ Киберспорт</button>
   <button onclick="showTab('results', this)">▤ Результаты</button>
-  <button onclick="showTab('favs', this)">☆ Избранное</button>
 </nav>
 
 <div class="container">
-
   <div id="tab-home">
     <div class="card welcome">
       <h2>WELCOME TO HUEVOBET</h2>
-      <p>Реальные матчи · Виртуальные ставки<br>Данные из PandaScore API</p>
+      <p>Реальные матчи из PandaScore · Виртуальные ставки<br>Данные обновляются каждые 15 минут</p>
       <div class="stats">
         <div class="stat"><div class="val" id="stat-live">0</div><div class="lbl">🔴 Матчей</div></div>
         <div class="stat"><div class="val" id="stat-cyber">0</div><div class="lbl">🎮 Киберспорт</div></div>
-        <div class="stat"><div class="val" id="stat-sports">4</div><div class="lbl">🏆 Категории</div></div>
+        <div class="stat"><div class="val" id="stat-sports">2</div><div class="lbl">🏆 Категории</div></div>
         <div class="stat"><div class="val" id="stat-bets">0</div><div class="lbl">💰 Моих ставок</div></div>
       </div>
     </div>
@@ -155,17 +139,14 @@
       <button class="active" onclick="filterSport('all', this)">Все</button>
       <button onclick="filterSport('Dota 2', this)">⚔ Dota 2</button>
       <button onclick="filterSport('CS2', this)">◈ CS2</button>
-      <button onclick="filterSport('Футбол', this)">⚽ Футбол</button>
-      <button onclick="filterSport('Баскетбол', this)">🏀 Баскетбол</button>
     </div>
-    <div id="matches-list"></div>
+    <div id="matches-list"><div class="card" style="text-align:center;color:var(--muted);">⏳ Загрузка матчей из data/matches.json...</div></div>
   </div>
 
-  <div id="tab-live" class="hidden"><div class="card"><h3>● LIVE матчи</h3><p style="color:var(--muted);margin-top:8px;">Скоро здесь будут трансляции</p></div></div>
+  <div id="tab-live" class="hidden"><div class="card"><h3>● LIVE матчи</h3><p style="color:var(--muted);margin-top:8px;">Отображаются на главной вкладке</p></div></div>
   <div id="tab-bets" class="hidden"><div class="card"><h3>💰 Мои ставки</h3><div id="my-bets-list" class="bet-history"></div></div></div>
-  <div id="tab-cyber" class="hidden"><div class="card"><h3>⚔ Киберспорт</h3><p style="color:var(--muted);margin-top:8px;">Dota 2 · CS2 — все матчи во вкладке "Главная"</p></div></div>
+  <div id="tab-cyber" class="hidden"><div class="card"><h3>⚔ Киберспорт</h3><p style="color:var(--muted);margin-top:8px;">Dota 2 и CS2 доступны на главной</p></div></div>
   <div id="tab-results" class="hidden"><div class="card"><h3>▤ Результаты</h3><div id="results-list" class="bet-history"></div></div></div>
-  <div id="tab-favs" class="hidden"><div class="card"><h3>☆ Избранное</h3><p style="color:var(--muted);margin-top:8px;">Пока пусто</p></div></div>
 
   <details style="margin-top:15px;">
     <summary style="color:var(--muted);font-size:12px;cursor:pointer;">🐞 Debug log</summary>
@@ -173,6 +154,7 @@
   </details>
 </div>
 
+<!-- КУПОН СТАВКИ -->
 <div class="bet-slip" id="bet-slip">
   <div id="slip-info" style="margin-bottom:10px;"></div>
   <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -182,6 +164,7 @@
   </div>
 </div>
 
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
 <nav class="bottom-nav">
   <button class="active" onclick="showTab('home', document.querySelector('.top-menu button'))"><span class="icon">⌂</span>Главная</button>
   <button onclick="showTab('live', document.querySelectorAll('.top-menu button')[1])"><span class="icon">●</span>LIVE</button>
@@ -190,6 +173,7 @@
   <button onclick="showTab('bets', document.querySelectorAll('.top-menu button')[2])"><span class="icon">▤</span>Ставки</button>
 </nav>
 
+<!-- МОДАЛКА ПОПОЛНЕНИЯ -->
 <div class="modal-overlay" id="topup-modal">
   <div class="modal">
     <div class="modal-header">
@@ -198,60 +182,28 @@
     </div>
     <div class="modal-body">
       <div class="modal-balance">
-        <div>
-          <div class="lbl">Баланс копилки</div>
-          <div style="font-size:11px;color:var(--muted);">Общий счёт сайта</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-size:22px;">🪙</span>
-          <span class="val" id="modal-balance">0</span>
-        </div>
+        <div><div class="lbl">Баланс копилки</div><div style="font-size:11px;color:var(--muted);">Локальное хранилище</div></div>
+        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:22px;">🪙</span><span class="val" id="modal-balance">0</span></div>
       </div>
-
       <div class="modal-tabs">
         <button class="active" onclick="switchTopupTab('deposit', this)">Пополнить</button>
         <button onclick="switchTopupTab('history', this)">История</button>
       </div>
-
       <div id="topup-form">
         <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Сколько монет внести в копилку</label>
         <input type="number" id="topup-amount" class="amount-input" inputmode="numeric" placeholder="100" min="1" max="100000">
-
         <div class="quick-amounts" style="margin-top:10px;">
-          <button onclick="setTopup(10)">10</button>
-          <button onclick="setTopup(50)">50</button>
-          <button onclick="setTopup(100)">100</button>
-          <button onclick="setTopup(250)">250</button>
-          <button onclick="setTopup(500)">500</button>
-          <button onclick="setTopup(1000)">1 000</button>
-          <button onclick="setTopup(5000)">5 000</button>
-          <button onclick="setTopup(10000)">10 000</button>
+          <button onclick="setTopup(100)">100</button><button onclick="setTopup(500)">500</button>
+          <button onclick="setTopup(1000)">1 000</button><button onclick="setTopup(5000)">5 000</button>
         </div>
-
-        <div class="receive-info" style="margin-top:12px;">
-          В копилку поступит: <b><span id="receive-amount">0</span> 🪙</b>
-        </div>
-
-        <button class="submit-btn" id="topup-submit" style="margin-top:12px;" onclick="doTopup()" disabled>
-          Пополнить копилку
-        </button>
-
+        <div class="receive-info" style="margin-top:12px;">В копилку поступит: <b><span id="receive-amount">0</span> 🪙</b></div>
+        <button class="submit-btn" id="topup-submit" style="margin-top:12px;" onclick="doTopup()" disabled>Пополнить копилку</button>
         <details class="rate-info" style="margin-top:8px;">
           <summary>ℹ️ О копилке</summary>
-          <p>
-            Копилка — это общий виртуальный баланс сайта. Все ставки и выигрыши проходят через неё.<br>
-            • 1 монета = 1 монета в копилке (без комиссии)<br>
-            • За раз до 100 000 монет<br>
-            • Дневной лимит пополнения: 50 000 монет<br>
-            • Монеты не имеют реальной денежной стоимости
-          </p>
+          <p>Копилка хранится в вашем браузере (localStorage). Монеты не имеют реальной денежной стоимости. Это чисто развлекательный проект.</p>
         </details>
       </div>
-
-      <div id="topup-history" class="hidden">
-        <div id="history-list" class="bet-history"></div>
-      </div>
-
+      <div id="topup-history" class="hidden"><div id="history-list" class="bet-history"></div></div>
     </div>
   </div>
 </div>
@@ -262,9 +214,31 @@
 </footer>
 
 <script>
-const API = "http://localhost:5000/api";
-let currentMatch = null, currentChoice = null, currentCoef = 0, currentFilter = "all";
+// ==================== СОСТОЯНИЕ (LocalStorage) ====================
+const STORAGE_KEY_BALANCE = 'huevobet_balance';
+const STORAGE_KEY_BETS = 'huevobet_bets';
 
+function getBalance() {
+  return parseFloat(localStorage.getItem(STORAGE_KEY_BALANCE)) || 1000.0;
+}
+function setBalance(val) {
+  localStorage.setItem(STORAGE_KEY_BALANCE, val.toFixed(2));
+  updateBalanceUI();
+}
+function getBets() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_BETS) || '[]');
+}
+function addBet(bet) {
+  const bets = getBets();
+  bets.unshift(bet);
+  localStorage.setItem(STORAGE_KEY_BETS, JSON.stringify(bets));
+  updateStats();
+}
+
+let currentMatch = null, currentChoice = null, currentCoef = 0, currentFilter = "all";
+let allMatches = [];
+
+// ==================== UI HELPERS ====================
 function dbg(msg) {
   const d = document.getElementById("debug");
   const t = new Date().toLocaleTimeString();
@@ -273,40 +247,34 @@ function dbg(msg) {
   console.log(`[HuevoBet] ${msg}`);
 }
 
+function updateBalanceUI() {
+  const bal = getBalance().toFixed(2);
+  document.getElementById("balance").textContent = bal;
+  document.getElementById("modal-balance").textContent = bal;
+}
+
+function updateStats() {
+  document.getElementById("stat-bets").textContent = getBets().length;
+}
+
+// ==================== ВКЛАДКИ ====================
 function showTab(name, btn) {
   document.querySelectorAll("[id^=tab-]").forEach(t => t.classList.add("hidden"));
   const tab = document.getElementById("tab-" + name);
   if (tab) tab.classList.remove("hidden");
-
   document.querySelectorAll(".top-menu button").forEach(b => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
-
   dbg(`📂 Вкладка: ${name}`);
-  if (name === "bets") loadMyBets();
-  if (name === "results") loadResults();
+  if (name === "bets" || name === "results") loadMyBets();
 }
 
-async function loadBalance() {
-  try {
-    const r = await fetch(`${API}/wallet`);
-    const d = await r.json();
-    document.getElementById("balance").textContent = d.balance;
-    const mb = document.getElementById("modal-balance");
-    if (mb) mb.textContent = d.balance;
-    dbg(`💰 Баланс: ${d.balance}`);
-  } catch (e) {
-    dbg(`❌ Ошибка баланса: ${e}`);
-  }
-}
-
+// ==================== МОДАЛКА ПОПОЛНЕНИЯ ====================
 function openTopup() {
   document.getElementById("topup-modal").classList.add("show");
-  loadBalance();
+  updateBalanceUI();
   dbg("💰 Открыта модалка пополнения");
 }
-function closeTopup() {
-  document.getElementById("topup-modal").classList.remove("show");
-}
+function closeTopup() { document.getElementById("topup-modal").classList.remove("show"); }
 function switchTopupTab(tab, btn) {
   document.querySelectorAll(".modal-tabs button").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -323,166 +291,194 @@ function updateReceive() {
   document.getElementById("receive-amount").textContent = v.toLocaleString("ru-RU");
   document.getElementById("topup-submit").disabled = v <= 0;
 }
-document.addEventListener("input", e => {
-  if (e.target.id === "topup-amount") updateReceive();
-});
+document.addEventListener("input", e => { if (e.target.id === "topup-amount") updateReceive(); });
 
-async function doTopup() {
+function doTopup() {
   const amount = parseFloat(document.getElementById("topup-amount").value);
-  if (!amount || amount <= 0) { dbg("❌ Неверная сумма"); return; }
-  try {
-    const r = await fetch(`${API}/wallet/topup`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({amount})
-    });
-    const d = await r.json();
-    if (d.error) { alert(d.error); dbg(`❌ ${d.error}`); return; }
-    document.getElementById("balance").textContent = d.balance;
-    document.getElementById("modal-balance").textContent = d.balance;
-    document.getElementById("topup-amount").value = "";
-    updateReceive();
-    dbg(`✅ Копилка пополнена: +${amount} → ${d.balance}`);
-    alert(`Копилка пополнена на ${amount} 🪙\nНовый баланс: ${d.balance} 🪙`);
-  } catch (e) {
-    dbg(`❌ Ошибка пополнения: ${e}`);
-  }
+  if (!amount || amount <= 0) return;
+  setBalance(getBalance() + amount);
+  document.getElementById("topup-amount").value = "";
+  updateReceive();
+  dbg(`✅ Копилка пополнена: +${amount} → ${getBalance()}`);
+  alert(`Копилка пополнена на ${amount} 🪙`);
 }
 
-async function syncMatches() {
-  dbg("🔄 Синхронизация с PandaScore...");
-  try {
-    const r = await fetch(`${API}/sync`, {method: "POST"});
-    const d = await r.json();
-    if (d.ok) {
-      dbg(`✅ Синхронизация: ${d.added} новых матчей`);
-      alert(`Обновлено! Добавлено ${d.added} новых матчей`);
-      loadMatches();
-    }
-  } catch (e) {
-    dbg(`❌ Ошибка синхронизации: ${e}`);
-  }
-}
-
+// ==================== ДАННЫЕ ИЗ PANDASCORE ====================
 async function loadMatches() {
   try {
-    const url = currentFilter === "all" ? `${API}/matches` : `${API}/matches?sport=${encodeURIComponent(currentFilter)}`;
-    const r = await fetch(url);
-    const matches = await r.json();
-    const box = document.getElementById("matches-list");
-    document.getElementById("stat-live").textContent = matches.length;
+    dbg("📡 Загрузка data/matches.json...");
+    const response = await fetch('./data/matches.json');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    
+    allMatches = [];
+    const map = {
+      "dota2_upcoming": "Dota 2",
+      "dota2_running": "Dota 2",
+      "cs2_upcoming": "CS2",
+      "cs2_running": "CS2"
+    };
 
-    let cyberCount = matches.filter(m => m.sport === "Dota 2" || m.sport === "CS2").length;
-    document.getElementById("stat-cyber").textContent = cyberCount;
-
-    if (matches.length === 0) {
-      box.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);">
-        Нет доступных матчей<br>
-        <button onclick="syncMatches()" style="margin-top:10px;background:var(--accent);color:var(--on-accent);border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">🔄 Обновить из PandaScore</button>
-      </div>`;
-      return;
-    }
-    box.innerHTML = matches.map(m => {
-      const startTime = new Date(m.start_time).toLocaleString("ru-RU", {
-        day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+    for (const [key, sportName] of Object.entries(map)) {
+      const matches = data.matches[key] || [];
+      matches.forEach(m => {
+        const t1 = (m.opponents?.[0]?.opponent?.name) || "TBD";
+        const t2 = (m.opponents?.[1]?.opponent?.name) || "TBD";
+        const league = m.league?.name || m.tournament?.name || "Unknown League";
+        const time = m.begin_at ? new Date(m.begin_at).toLocaleString("ru-RU", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"}) : "Скоро";
+        
+        // Генерация реалистичных коэффициентов (т.к. free tier PandaScore не всегда даёт odds)
+        const c1 = (1.2 + Math.random() * 2.5).toFixed(2);
+        const c2 = (1.2 + Math.random() * 2.5).toFixed(2);
+        
+        allMatches.push({
+          id: m.id, sport: sportName, team1: t1, team2: t2,
+          tournament: league, time: time,
+          coef1: c1, coef2: c2, status: key.includes("running") ? "live" : "upcoming"
+        });
       });
-      return `
-      <div class="card match-card">
-        <div class="match-info">
-          <div class="sport">${m.sport}</div>
-          <div class="teams"><b>${m.team1}</b> vs <b>${m.team2}</b></div>
-          ${m.tournament ? `<div class="tournament">🏆 ${m.tournament}</div>` : ""}
-          <div class="time">🕐 ${startTime}</div>
-        </div>
-        <div class="coeffs">
-          ${m.coef1 ? `<button onclick="openSlip(${m.id},'team1','${m.team1}',${m.coef1})">П1 ${m.coef1}</button>` : ""}
-          ${m.coefX ? `<button onclick="openSlip(${m.id},'draw','Ничья',${m.coefX})">X ${m.coefX}</button>` : ""}
-          ${m.coef2 ? `<button onclick="openSlip(${m.id},'team2','${m.team2}',${m.coef2})">П2 ${m.coef2}</button>` : ""}
-        </div>
-      </div>
-    `}).join("");
-    dbg(`🎮 Матчей: ${matches.length}`);
+    }
+
+    renderMatches();
+    dbg(`✅ Загружено ${allMatches.length} матчей`);
   } catch (e) {
-    dbg(`❌ Ошибка матчей: ${e}`);
-    document.getElementById("matches-list").innerHTML =
-      `<div class="card" style="color:var(--red);">⚠ Не удалось загрузить матчи. Проверь, запущен ли python app.py</div>`;
+    dbg(`❌ Ошибка загрузки матчей: ${e.message}`);
+    document.getElementById("matches-list").innerHTML = 
+      `<div class="card" style="text-align:center;color:var(--red);">
+        ⚠ Не удалось загрузить data/matches.json<br>
+        <small>Убедитесь, что GitHub Actions успешно отработал и файл существует.</small>
+       </div>`;
   }
+}
+
+function renderMatches() {
+  const filtered = currentFilter === "all" ? allMatches : allMatches.filter(m => m.sport === currentFilter);
+  document.getElementById("stat-live").textContent = filtered.filter(m => m.status === "live").length || filtered.length;
+  document.getElementById("stat-cyber").textContent = allMatches.filter(m => m.sport === "Dota 2" || m.sport === "CS2").length;
+
+  const box = document.getElementById("matches-list");
+  if (filtered.length === 0) {
+    box.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);">Нет доступных матчей</div>`;
+    return;
+  }
+
+  box.innerHTML = filtered.map(m => `
+    <div class="card match-card">
+      <div class="match-info">
+        <div class="sport">${m.sport} ${m.status === "live" ? "🔴 LIVE" : ""}</div>
+        <div class="teams"><b>${m.team1}</b> vs <b>${m.team2}</b></div>
+        <div class="tournament">🏆 ${m.tournament}</div>
+        <div class="time">🕐 ${m.time}</div>
+      </div>
+      <div class="coeffs">
+        <button onclick="openSlip('${m.id}','team1','${m.team1}',${m.coef1})">П1 ${m.coef1}</button>
+        <button onclick="openSlip('${m.id}','team2','${m.team2}',${m.coef2})">П2 ${m.coef2}</button>
+      </div>
+    </div>
+  `).join("");
 }
 
 function filterSport(sport, btn) {
   currentFilter = sport;
   document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
-  dbg(`🔍 Фильтр: ${sport}`);
-  loadMatches();
+  renderMatches();
 }
 
+// ==================== СТАВКИ ====================
 function openSlip(matchId, choice, name, coef) {
-  currentMatch = matchId; currentChoice = choice; currentCoef = coef;
-  document.getElementById("slip-info").innerHTML =
-    `<b>${name}</b> @ <span style="color:var(--accent);font-weight:900;">${coef}</span>`;
+  currentMatch = matchId; currentChoice = choice; currentCoef = parseFloat(coef);
+  document.getElementById("slip-info").innerHTML = `<b>${name}</b> @ <span style="color:var(--accent);font-weight:900;">${currentCoef}</span>`;
   document.getElementById("bet-slip").classList.add("show");
-  dbg(`🎯 Выбор: ${name} @ ${coef}`);
+  dbg(`🎯 Выбор: ${name} @ ${currentCoef}`);
 }
 function closeSlip() { document.getElementById("bet-slip").classList.remove("show"); }
 
-async function confirmBet() {
+function confirmBet() {
   const amount = parseFloat(document.getElementById("bet-amount").value);
   if (!amount || amount <= 0) { dbg("❌ Неверная сумма"); return; }
-  try {
-    const r = await fetch(`${API}/bet`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({match_id: currentMatch, choice: currentChoice, amount})
-    });
-    const d = await r.json();
-    if (d.error) { alert(d.error); dbg(`❌ ${d.error}`); return; }
-    dbg(`✅ Ставка ${d.bet_amount} @ ${d.coef} → ${d.potential_win}`);
-    alert(`Ставка принята!\nВозможный выигрыш: ${d.potential_win} 🪙`);
-    document.getElementById("balance").textContent = d.new_balance;
-    document.getElementById("modal-balance").textContent = d.new_balance;
-    closeSlip();
-    document.getElementById("bet-amount").value = "";
-    document.getElementById("stat-bets").textContent = parseInt(document.getElementById("stat-bets").textContent) + 1;
-  } catch (e) {
-    dbg(`❌ Ошибка ставки: ${e}`);
+  if (amount > 500) { alert("Максимальная ставка: 500 🪙"); return; }
+  
+  const bal = getBalance();
+  if (bal < amount) { alert("Недостаточно монет в копилке!"); return; }
+
+  setBalance(bal - amount);
+  
+  const match = allMatches.find(m => m.id == currentMatch) || {team1: "Unknown", team2: "Unknown", sport: "Sport"};
+  const bet = {
+    id: Date.now(),
+    match_id: currentMatch,
+    sport: match.sport,
+    team1: match.team1,
+    team2: match.team2,
+    choice: currentChoice,
+    amount: amount,
+    coef: currentCoef,
+    potential_win: (amount * currentCoef).toFixed(2),
+    result: "pending",
+    created_at: new Date().toISOString()
+  };
+  
+  addBet(bet);
+  dbg(`✅ Ставка ${amount} @ ${currentCoef} → возможный выигрыш ${bet.potential_win}`);
+  alert(`Ставка принята!\nВозможный выигрыш: ${bet.potential_win} 🪙`);
+  closeSlip();
+  document.getElementById("bet-amount").value = "";
+}
+
+// ==================== ИСТОРИЯ И РОЗЫГРЫШ ====================
+function loadMyBets() {
+  const bets = getBets();
+  const html = bets.length === 0
+    ? `<div style="text-align:center;color:var(--muted);padding:20px;">Пока нет операций</div>`
+    : bets.map(b => `
+      <div class="bet-item">
+        <b>${b.sport}</b>: ${b.team1} vs ${b.team2} — <i>${b.choice === 'team1' ? 'П1' : 'П2'}</i><br>
+        ${b.amount} 🪙 @ ${b.coef} → 
+        <span class="${b.result}">
+          ${b.result === "win" ? "✓ +" + b.payout : b.result === "lose" ? "✗ проигрыш" : "⏳ ожидание"}
+        </span>
+        ${b.result === "pending" ? `<button onclick="resolveBet(${b.id})" style="margin-left:8px;font-size:10px;padding:2px 6px;background:var(--surface-3);color:var(--fg);border:none;border-radius:4px;cursor:pointer;">🎲 Тест розыгрыша</button>` : ""}
+      </div>`).join("");
+  
+  const box1 = document.getElementById("history-list");
+  const box2 = document.getElementById("my-bets-list");
+  if (box1) box1.innerHTML = html;
+  if (box2) box2.innerHTML = html;
+}
+
+function resolveBet(betId) {
+  const bets = getBets();
+  const betIndex = bets.findIndex(b => b.id === betId);
+  if (betIndex === -1 || bets[betIndex].result !== "pending") return;
+
+  // Имитация розыгрыша: шанс выигрыша обратно пропорционален коэффициенту
+  const winChance = 1 / bets[betIndex].coef;
+  const isWin = Math.random() < winChance;
+  
+  if (isWin) {
+    bets[betIndex].result = "win";
+    bets[betIndex].payout = bets[betIndex].potential_win;
+    setBalance(getBalance() + parseFloat(bets[betIndex].payout));
+    dbg(`🏆 Розыгрыш: ВЫИГРЫШ +${bets[betIndex].payout}`);
+  } else {
+    bets[betIndex].result = "lose";
+    bets[betIndex].payout = 0;
+    dbg(`❌ Розыгрыш: ПРОИГРЫШ`);
   }
+  
+  localStorage.setItem(STORAGE_KEY_BETS, JSON.stringify(bets));
+  loadMyBets();
+  alert(isWin ? `🎉 Поздравляем! Вы выиграли ${bets[betIndex].payout} 🪙` : `😔 Не повезло. Ставка проиграла.`);
 }
 
-async function loadMyBets() {
-  try {
-    const r = await fetch(`${API}/bets`);
-    const bets = await r.json();
-    const box = document.getElementById("history-list");
-    const box2 = document.getElementById("my-bets-list");
-    const html = bets.length === 0
-      ? `<div style="text-align:center;color:var(--muted);padding:20px;">Пока нет операций</div>`
-      : bets.map(b => `
-        <div class="bet-item">
-          <b>${b.sport}</b>: ${b.team1} vs ${b.team2} — <i>${b.choice}</i><br>
-          ${b.amount} 🪙 @ ${b.coef} →
-          <span class="${b.result}">${b.result === "win" ? "✓ +" + b.payout : b.result === "lose" ? "✗ проигрыш" : "⏳ ожидание"}</span>
-        </div>`).join("");
-    if (box) box.innerHTML = html;
-    if (box2) box2.innerHTML = html;
-    dbg(`📜 Операций: ${bets.length}`);
-  } catch (e) { dbg(`❌ Ошибка истории: ${e}`); }
-}
-
-async function loadResults() {
-  try {
-    const r = await fetch(`${API}/matches`);
-    const all = await r.json();
-    const box = document.getElementById("results-list");
-    box.innerHTML = `<div style="color:var(--muted);">Завершённых матчей пока нет. Розыгрыш через /api/resolve/&lt;id&gt;</div>`;
-  } catch (e) { dbg(`❌ ${e}`); }
-}
-
-dbg("🚀 HuevoBet запускается...");
-loadBalance();
+// ==================== СТАРТ ====================
+dbg("🚀 HuevoBet (Static) запускается...");
+updateBalanceUI();
+updateStats();
 loadMatches();
-setInterval(loadBalance, 15000);
+// Автообновление матчей каждые 5 минут (если вкладка активна)
+setInterval(() => { if (!document.hidden) loadMatches(); }, 300000);
 </script>
-
 </body>
 </html>
