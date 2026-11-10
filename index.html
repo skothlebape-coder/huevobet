@@ -1,5 +1,6 @@
+from pathlib import Path
 
-<!DOCTYPE html>
+html = r'''<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -8,380 +9,145 @@
 <title>HuevoBet — Sports Center</title>
 <style>
 :root {
-  --bg:#090b10;
-  --panel:#11151e;
-  --panel2:#171d28;
-  --line:#242b38;
-  --text:#f3f5fa;
-  --muted:#8993a5;
-  --accent:#a4f05b;
-  --red:#ff5d68;
+  --bg:#090b10; --panel:#11151e; --panel2:#171d28; --line:#242b38;
+  --text:#f3f5fa; --muted:#8993a5; --accent:#a4f05b; --red:#ff5d68;
 }
 * {box-sizing:border-box}
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,Arial,sans-serif;
-}
-button,input {font:inherit}
-button {cursor:pointer}
+body {margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+button,input {font:inherit} button {cursor:pointer}
 .app {display:flex;min-height:100vh}
 .sidebar {
-  width:235px;
-  padding:26px 17px;
-  border-right:1px solid var(--line);
-  background:#0d1017;
-  position:fixed;
-  inset:0 auto 0 0;
-  z-index:3;
+  width:235px;padding:26px 17px;border-right:1px solid var(--line);
+  background:#0d1017;position:fixed;inset:0 auto 0 0;z-index:3;
 }
-.logo {
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1.5px;
-  margin:3px 12px 35px;
-}
+.logo {font-size:25px;font-weight:900;letter-spacing:-1.5px;margin:3px 12px 35px}
 .logo span {color:var(--accent)}
-.menu-label {
-  color:#647084;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:1.7px;
-  margin:25px 12px 10px;
-}
+.menu-label {color:#647084;font-size:10px;font-weight:800;letter-spacing:1.7px;margin:25px 12px 10px}
 .nav {display:flex;flex-direction:column;gap:5px}
 .nav button {
-  border:0;
-  background:transparent;
-  color:#9aa4b5;
-  text-align:left;
-  padding:13px 12px;
-  border-radius:10px;
-  font-size:14px;
-  transition:.2s;
+  border:0;background:transparent;color:#9aa4b5;text-align:left;padding:13px 12px;
+  border-radius:10px;font-size:14px;transition:.2s
 }
-.nav button:hover,.nav button.active {
-  background:#1b242e;
-  color:var(--accent);
-}
+.nav button:hover,.nav button.active {background:#1b242e;color:var(--accent)}
 .nav button span {display:inline-block;width:28px}
 .sidebar-note {
-  position:absolute;
-  bottom:24px;
-  left:17px;
-  right:17px;
-  color:#657084;
-  font-size:11px;
-  line-height:1.6;
-  padding:13px;
-  border:1px solid var(--line);
-  border-radius:10px;
+  position:absolute;bottom:24px;left:17px;right:17px;color:#657084;font-size:11px;
+  line-height:1.6;padding:13px;border:1px solid var(--line);border-radius:10px
 }
-.main {
-  width:calc(100% - 235px);
-  margin-left:235px;
-  padding:30px 38px 60px;
-  max-width:1500px;
-}
-.topbar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:30px;
-}
-.eyebrow {
-  color:var(--accent);
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:2px;
-}
+.main {width:calc(100% - 235px);margin-left:235px;padding:30px 38px 60px;max-width:1500px}
+.topbar {display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
+.eyebrow {color:var(--accent);font-size:11px;font-weight:800;letter-spacing:2px}
 h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
 .subtitle {color:var(--muted);font-size:13px}
 .clock {
-  color:#b4bdca;
-  font-size:13px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  padding:12px 15px;
-  border-radius:10px;
-  white-space:nowrap;
+  color:#b4bdca;font-size:13px;background:var(--panel);border:1px solid var(--line);
+  padding:12px 15px;border-radius:10px;white-space:nowrap
+}
+.coin-wallet {
+  display:inline-flex;align-items:center;gap:7px;margin-top:9px;padding:9px 13px;
+  border:1px solid #465b32;border-radius:9px;background:#1c291b;color:var(--accent);
+  font-size:13px;font-weight:800
 }
 .hero {
   background:linear-gradient(115deg,#1b2a20,#141b20 65%,#17202a);
-  border:1px solid #304132;
-  border-radius:17px;
-  padding:25px;
-  margin-bottom:26px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
+  border:1px solid #304132;border-radius:17px;padding:25px;margin-bottom:26px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px
 }
 .hero h2 {font-size:22px;margin:8px 0}
 .hero p {color:#a8b6aa;font-size:13px;margin:0;line-height:1.6}
 .hero-mark {font-size:46px;color:var(--accent);font-weight:900}
-.stats {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:13px;
-}
-.stat {
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:17px;
-}
+.stats {display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.stat {background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px}
 .stat-icon {font-size:19px}
 .stat strong {display:block;font-size:22px;margin:12px 0 5px}
 .stat span {color:var(--muted);font-size:12px}
-.section-title {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:30px 0 15px;
-  gap:10px;
-}
+.section-title {display:flex;justify-content:space-between;align-items:center;margin:30px 0 15px;gap:10px}
 .section-title h2 {font-size:18px;margin:0}
 .section-title small {color:var(--muted)}
-.search-wrap {
-  position:relative;
-  margin:17px 0 12px;
-}
-.search-icon {
-  position:absolute;
-  left:15px;
-  top:50%;
-  transform:translateY(-50%);
-  color:var(--muted);
-  font-size:17px;
-  pointer-events:none;
-}
+.search-wrap {position:relative;margin:17px 0 12px}
+.search-icon {position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}
 .search-input {
-  width:100%;
-  background:var(--panel);
-  border:1px solid var(--line);
-  color:var(--text);
-  border-radius:11px;
-  padding:14px 45px;
-  outline:none;
-  font-size:13px;
-  transition:.2s;
+  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);
+  border-radius:11px;padding:14px 45px;outline:none;font-size:13px;transition:.2s
 }
 .search-input:focus {border-color:#668747}
 .search-input::placeholder {color:#697487}
 .search-clear {
-  position:absolute;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  font-size:18px;
-  display:none;
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;
+  background:transparent;color:var(--muted);font-size:18px;display:none
 }
 .search-clear.visible {display:block}
-.filters {
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:12px 0 17px;
-}
-.filter {
-  background:var(--panel);
-  border:1px solid var(--line);
-  color:#aab3c1;
-  border-radius:9px;
-  padding:9px 14px;
-  font-size:12px;
-}
-.filter.active {
-  background:#24321e;
-  color:var(--accent);
-  border-color:#506b38;
-}
+.filters {display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 17px}
+.filter {background:var(--panel);border:1px solid var(--line);color:#aab3c1;border-radius:9px;padding:9px 14px;font-size:12px}
+.filter.active {background:#24321e;color:var(--accent);border-color:#506b38}
 .match-list {display:grid;gap:10px}
-.empty {
-  border:1px dashed #343e4d;
-  background:var(--panel);
-  border-radius:14px;
-  text-align:center;
-  padding:40px 20px;
-}
+.empty {border:1px dashed #343e4d;background:var(--panel);border-radius:14px;text-align:center;padding:40px 20px}
 .empty-icon {font-size:32px;margin-bottom:12px}
 .empty h3 {margin:0 0 8px;font-size:16px}
-.empty p {
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.6;
-  max-width:420px;
-  margin:0 auto;
-}
+.empty p {color:var(--muted);font-size:13px;line-height:1.6;max-width:420px;margin:0 auto}
 .match {
-  background:var(--panel);
-  border:1px solid var(--line);
-  padding:17px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  transition:.2s;
-  cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);padding:17px;border-radius:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:15px;transition:.2s;cursor:pointer
 }
-.match:hover {
-  border-color:#668747;
-  background:#141a22;
-}
+.match:hover {border-color:#668747;background:#141a22}
 .match-info {display:flex;flex-direction:column;gap:8px;min-width:0}
 .match-league {color:var(--muted);font-size:11px}
 .match-teams {font-size:14px;font-weight:700;overflow-wrap:anywhere}
 .match-time {color:var(--accent);font-size:12px}
-.match-side {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  flex-shrink:0;
-}
-.tag {
-  font-size:10px;
-  color:var(--accent);
-  background:#24321e;
-  padding:6px 9px;
-  border-radius:6px;
-}
-.tag.live {
-  color:#ff858d;
-  background:#3a2028;
-}
+.match-side {display:flex;align-items:center;gap:9px;flex-shrink:0}
+.tag {font-size:10px;color:var(--accent);background:#24321e;padding:6px 9px;border-radius:6px}
+.tag.live {color:#ff858d;background:#3a2028}
 .tag.past {color:#aab3c1;background:#252c37}
-.fav-button {
-  background:transparent;
-  border:1px solid var(--line);
-  color:#aab3c1;
-  border-radius:8px;
-  padding:6px 10px;
-  font-size:16px;
-}
+.fav-button {background:transparent;border:1px solid var(--line);color:#aab3c1;border-radius:8px;padding:6px 10px;font-size:16px}
 .fav-button.selected {color:var(--accent)}
 .details-overlay {
-  position:fixed;
-  inset:0;
-  z-index:20;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  backdrop-filter:blur(5px);
+  position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);display:none;
+  align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)
 }
 .details-overlay.open {display:flex}
 .details-modal {
-  width:100%;
-  max-width:540px;
-  max-height:85vh;
-  overflow:auto;
-  background:#11151e;
-  border:1px solid #30394a;
-  border-radius:17px;
-  padding:23px;
-  box-shadow:0 20px 80px #0009;
+  width:100%;max-width:540px;max-height:85vh;overflow:auto;background:#11151e;
+  border:1px solid #30394a;border-radius:17px;padding:23px;box-shadow:0 20px 80px #0009
 }
-.modal-top {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:20px;
-}
+.modal-top {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
 .modal-top h2 {font-size:17px;margin:0}
-.modal-close {
-  width:35px;
-  height:35px;
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:var(--panel2);
-  color:var(--text);
-  font-size:20px;
-}
-.detail-league {
-  color:var(--muted);
-  font-size:12px;
-  margin-bottom:17px;
-}
+.modal-close {width:35px;height:35px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);font-size:20px}
+.detail-league {color:var(--muted);font-size:12px;margin-bottom:17px}
 .detail-teams {
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  gap:10px;
-  padding:22px 12px;
-  background:#171d28;
-  border:1px solid var(--line);
-  border-radius:13px;
-  text-align:center;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
+  padding:22px 12px;background:#171d28;border:1px solid var(--line);border-radius:13px;text-align:center
 }
-.detail-team {
-  font-size:14px;
-  font-weight:800;
-  overflow-wrap:anywhere;
-}
-.detail-score {
-  font-size:23px;
-  font-weight:900;
-  color:var(--accent);
-  white-space:nowrap;
-}
+.detail-team {font-size:14px;font-weight:800;overflow-wrap:anywhere}
+.detail-score {font-size:23px;font-weight:900;color:var(--accent);white-space:nowrap}
 .detail-status {margin-top:15px;text-align:center}
-.detail-grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:20px;
+.detail-grid {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.detail-item {background:#171d28;border:1px solid var(--line);padding:13px;border-radius:10px;min-width:0}
+.detail-item span {display:block;color:var(--muted);font-size:10px;margin-bottom:7px}
+.detail-item strong {font-size:12px;overflow-wrap:anywhere}
+.modal-note {color:var(--muted);font-size:11px;line-height:1.6;margin-top:17px}
+.quiz-box {margin-top:18px;padding:17px;background:#171d28;border:1px solid #30394a;border-radius:13px}
+.quiz-title {font-size:15px;font-weight:800;margin-bottom:8px}
+.quiz-description {color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
+.quiz-teams {display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.quiz-team {
+  min-width:0;padding:12px 8px;border:1px solid var(--line);background:#11151e;
+  color:var(--text);border-radius:9px;font-size:12px;font-weight:700;overflow-wrap:anywhere
 }
-.detail-item {
-  background:#171d28;
-  border:1px solid var(--line);
-  padding:13px;
-  border-radius:10px;
-  min-width:0;
-}
-.detail-item span {
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-bottom:7px;
-}
-.detail-item strong {
-  font-size:12px;
-  overflow-wrap:anywhere;
-}
-.modal-note {
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.6;
-  margin-top:17px;
-}
-.footer {
-  color:#606b7c;
-  font-size:11px;
-  text-align:center;
-  margin-top:40px;
-  line-height:1.7;
-}
+.quiz-team.selected {border-color:var(--accent);background:#26351f;color:var(--accent)}
+.quiz-team:disabled {opacity:.65;cursor:default}
+.quiz-question {font-size:14px;font-weight:700;margin:12px 0;line-height:1.5}
+.quiz-answers {display:grid;gap:8px}
+.quiz-answer {padding:11px;border:1px solid var(--line);background:#11151e;color:#dce2ec;border-radius:8px;text-align:left;font-size:12px}
+.quiz-answer:hover:not(:disabled) {border-color:var(--accent)}
+.quiz-answer:disabled {cursor:default;opacity:.7}
+.quiz-message {margin-top:12px;font-size:12px;line-height:1.5;color:var(--accent);min-height:18px}
+.quiz-history {margin-top:15px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.7}
+.footer {color:#606b7c;font-size:11px;text-align:center;margin-top:40px;line-height:1.7}
 .mobile-nav {display:none}
-@media(max-width:900px) {
-  .main {padding:25px 22px}
-  .stats {grid-template-columns:repeat(2,1fr)}
-}
+@media(max-width:900px) {.main {padding:25px 22px}.stats {grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px) {
   .sidebar {display:none}
-  .main {
-    width:100%;
-    margin:0;
-    padding:20px 15px 95px;
-  }
+  .main {width:100%;margin:0;padding:20px 15px 95px}
   .topbar {align-items:flex-start}
   h1 {font-size:25px}
   .clock {font-size:10px;padding:9px}
@@ -394,27 +160,11 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
   .match {align-items:flex-start}
   .match-side {flex-direction:column;align-items:flex-end}
   .mobile-nav {
-    display:flex;
-    position:fixed;
-    z-index:5;
-    bottom:0;
-    left:0;
-    right:0;
-    background:#11151e;
-    border-top:1px solid var(--line);
-    justify-content:space-around;
-    padding:10px 4px calc(10px + env(safe-area-inset-bottom));
+    display:flex;position:fixed;z-index:5;bottom:0;left:0;right:0;background:#11151e;
+    border-top:1px solid var(--line);justify-content:space-around;
+    padding:10px 4px calc(10px + env(safe-area-inset-bottom))
   }
-  .mobile-nav button {
-    background:transparent;
-    border:0;
-    color:#8d98a9;
-    font-size:10px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:5px;
-  }
+  .mobile-nav button {background:transparent;border:0;color:#8d98a9;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:5px}
   .mobile-nav button.active {color:var(--accent)}
   .mobile-nav b {font-size:18px}
   .details-modal {padding:17px}
@@ -436,10 +186,7 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
       <button data-page="results"><span>▤</span>Результаты</button>
       <button data-page="favorites"><span>☆</span>Избранное</button>
     </nav>
-    <div class="sidebar-note">
-      HuevoBet Sports Center<br>
-      Спортивная информация и результаты
-    </div>
+    <div class="sidebar-note">HuevoBet Sports Center<br>Спортивная информация и результаты</div>
   </aside>
 
   <main class="main">
@@ -449,7 +196,10 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
         <h1 id="pageTitle">Главная</h1>
         <div class="subtitle" id="today"></div>
       </div>
-      <div class="clock" id="clock">--:--</div>
+      <div>
+        <div class="clock" id="clock">--:--</div>
+        <div class="coin-wallet">🪙 <span id="coinBalance">0</span> монет</div>
+      </div>
     </header>
 
     <section class="hero">
@@ -462,26 +212,10 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
     </section>
 
     <section class="stats">
-      <div class="stat">
-        <div class="stat-icon">🔴</div>
-        <strong id="liveCount">—</strong>
-        <span>Матчей LIVE</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon">🎮</div>
-        <strong>2</strong>
-        <span>Киберспорт дисциплины</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon">🏆</div>
-        <strong>4</strong>
-        <span>Категории спорта</span>
-      </div>
-      <div class="stat">
-        <div class="stat-icon">☆</div>
-        <strong id="favCount">0</strong>
-        <span>Избранные команды</span>
-      </div>
+      <div class="stat"><div class="stat-icon">🔴</div><strong id="liveCount">—</strong><span>Матчей LIVE</span></div>
+      <div class="stat"><div class="stat-icon">🎮</div><strong>2</strong><span>Киберспорт дисциплины</span></div>
+      <div class="stat"><div class="stat-icon">🏆</div><strong>4</strong><span>Категории спорта</span></div>
+      <div class="stat"><div class="stat-icon">☆</div><strong id="favCount">0</strong><span>Избранные команды</span></div>
     </section>
 
     <div class="section-title">
@@ -491,13 +225,7 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
 
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input
-        class="search-input"
-        id="searchInput"
-        type="search"
-        placeholder="Найти команду, турнир или матч..."
-        autocomplete="off"
-      >
+      <input class="search-input" id="searchInput" type="search" placeholder="Найти команду, турнир или матч..." autocomplete="off">
       <button class="search-clear" id="searchClear" type="button">×</button>
     </div>
 
@@ -508,16 +236,13 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
     </div>
 
     <section class="match-list" id="matchList">
-      <div class="empty">
-        <div class="empty-icon">📡</div>
-        <h3>Загружаем спортивные данные</h3>
-        <p>Подключаем расписание и результаты матчей</p>
-      </div>
+      <div class="empty"><div class="empty-icon">📡</div><h3>Загружаем спортивные данные</h3><p>Подключаем расписание и результаты матчей</p></div>
     </section>
 
     <div class="footer">
       HuevoBet Sports Center · Информационный спортивный проект<br>
-      Источник данных: PandaScore · Время: Europe/Amsterdam
+      Источник данных: PandaScore · Время: Europe/Amsterdam<br>
+      Игровые монеты предназначены только для викторины и не имеют денежной стоимости
     </div>
   </main>
 </div>
@@ -542,270 +267,245 @@ h1 {font-size:30px;letter-spacing:-1px;margin:8px 0 5px}
 
 <script>
 const pages = {
-  home:["Главная","Спортивные события"],
-  live:["LIVE","Матчи в прямом эфире"],
-  dota:["Dota 2","Матчи Dota 2"],
-  cs:["CS2","Матчи CS2"],
-  football:["Футбол","Футбольные матчи"],
-  basketball:["Баскетбол","Баскетбольные матчи"],
-  results:["Результаты","Завершённые матчи"],
-  favorites:["Избранное","Избранные команды"]
+  home:["Главная","Спортивные события"], live:["LIVE","Матчи в прямом эфире"],
+  dota:["Dota 2","Матчи Dota 2"], cs:["CS2","Матчи CS2"],
+  football:["Футбол","Футбольные матчи"], basketball:["Баскетбол","Баскетбольные матчи"],
+  results:["Результаты","Завершённые матчи"], favorites:["Избранное","Избранные команды"]
 };
 
-let currentPage = "home";
-let currentFilter = "all";
-let matchesData = null;
-let searchQuery = "";
-
+let currentPage = "home", currentFilter = "all", matchesData = null, searchQuery = "";
 let favorites = [];
 try {
   favorites = JSON.parse(localStorage.getItem("huevoFavorites") || "[]");
   if (!Array.isArray(favorites)) favorites = [];
-} catch {
-  favorites = [];
+} catch { favorites = []; }
+
+function safeStoredArray(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch { return []; }
 }
+let coinBalance = Math.max(0, Number(localStorage.getItem("huevoCoins") || 0));
+if (!Number.isFinite(coinBalance)) coinBalance = 0;
+let quizHistory = safeStoredArray("huevoQuizHistory");
+let completedQuizzes = safeStoredArray("huevoCompletedQuizzes");
+
+function updateCoinBalance() {
+  document.getElementById("coinBalance").textContent = coinBalance.toLocaleString("ru-RU");
+}
+updateCoinBalance();
 
 function updateClock() {
   const now = new Date();
-
   document.getElementById("clock").textContent =
-    new Intl.DateTimeFormat("ru-RU", {
-      timeZone:"Europe/Amsterdam",
-      hour:"2-digit",
-      minute:"2-digit",
-      second:"2-digit"
-    }).format(now) + " · AMS";
-
+    new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(now) + " · AMS";
   document.getElementById("today").textContent =
-    new Intl.DateTimeFormat("ru-RU", {
-      timeZone:"Europe/Amsterdam",
-      weekday:"long",
-      day:"numeric",
-      month:"long",
-      year:"numeric"
-    }).format(now);
+    new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
 }
-
 updateClock();
 setInterval(updateClock,1000);
 
 function updateFilterButtons() {
-  document.querySelectorAll("[data-filter]").forEach(button => {
-    button.classList.toggle("active",button.dataset.filter === currentFilter);
-  });
+  document.querySelectorAll("[data-filter]").forEach(button => button.classList.toggle("active",button.dataset.filter === currentFilter));
 }
-
 function setPage(page) {
   if (!pages[page]) return;
-
-  currentPage = page;
-  currentFilter = "all";
-  updateFilterButtons();
-
+  currentPage = page; currentFilter = "all"; updateFilterButtons();
   document.getElementById("pageTitle").textContent = pages[page][0];
   document.getElementById("listTitle").textContent = pages[page][1];
-
-  document.querySelectorAll("[data-page]").forEach(button => {
-    button.classList.toggle("active",button.dataset.page === page);
-  });
-
+  document.querySelectorAll("[data-page]").forEach(button => button.classList.toggle("active",button.dataset.page === page));
   render();
 }
-
-document.querySelectorAll("[data-page]").forEach(button => {
-  button.addEventListener("click",() => setPage(button.dataset.page));
-});
-
-document.querySelectorAll("[data-filter]").forEach(button => {
-  button.addEventListener("click",() => {
-    currentFilter = button.dataset.filter;
-    updateFilterButtons();
-    render();
-  });
-});
+document.querySelectorAll("[data-page]").forEach(button => button.addEventListener("click",() => setPage(button.dataset.page)));
+document.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click",() => {
+  currentFilter = button.dataset.filter; updateFilterButtons(); render();
+}));
 
 const searchInput = document.getElementById("searchInput");
 const searchClear = document.getElementById("searchClear");
-
 searchInput.addEventListener("input",() => {
   searchQuery = searchInput.value.trim().toLowerCase();
-  searchClear.classList.toggle("visible",searchQuery.length > 0);
-  render();
+  searchClear.classList.toggle("visible",searchQuery.length > 0); render();
 });
-
 searchClear.addEventListener("click",() => {
-  searchInput.value = "";
-  searchQuery = "";
-  searchClear.classList.remove("visible");
-  render();
-  searchInput.focus();
+  searchInput.value = ""; searchQuery = ""; searchClear.classList.remove("visible"); render(); searchInput.focus();
 });
 
 function getAllMatches() {
   if (!matchesData || !matchesData.matches) return [];
-
   const result = [];
-
   Object.entries(matchesData.matches).forEach(([key,items]) => {
-    const game = key.startsWith("dota2") ? "dota" :
-                 key.startsWith("cs2") ? "cs" : "other";
-
-    const category = key.endsWith("running") ? "live" :
-                     key.endsWith("past") ? "past" : "upcoming";
-
+    const game = key.startsWith("dota2") ? "dota" : key.startsWith("cs2") ? "cs" : "other";
+    const category = key.endsWith("running") ? "live" : key.endsWith("past") ? "past" : "upcoming";
     if (!Array.isArray(items)) return;
-
-    items.forEach(match => {
-      result.push({...match,game,category});
-    });
+    items.forEach(match => result.push({...match,game,category}));
   });
-
   return result;
 }
-
 function teamNames(match) {
-  const opponents = match.opponents || [];
-
-  const names = opponents.map(item =>
-    item.opponent?.name || "Неизвестная команда"
-  );
-
-  return [
-    names[0] || "Команда 1",
-    names[1] || "Команда 2"
-  ];
+  const names = (match.opponents || []).map(item => item.opponent?.name || "Неизвестная команда");
+  return [names[0] || "Команда 1",names[1] || "Команда 2"];
 }
-
 function formatDate(value) {
   if (!value) return "Время не указано";
-
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Время не указано";
-
-  return new Intl.DateTimeFormat("ru-RU",{
-    timeZone:"Europe/Amsterdam",
-    day:"2-digit",
-    month:"short",
-    year:"numeric",
-    hour:"2-digit",
-    minute:"2-digit"
-  }).format(date);
+  return new Intl.DateTimeFormat("ru-RU",{timeZone:"Europe/Amsterdam",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date);
 }
-
 function getScore(match,name) {
-  const opponent = (match.opponents || []).find(
-    item => item.opponent?.name === name
-  );
-
+  const opponent = (match.opponents || []).find(item => item.opponent?.name === name);
   if (!opponent) return "—";
-
-  const result = (match.results || []).find(
-    item => item.team_id === opponent.opponent?.id
-  );
-
+  const result = (match.results || []).find(item => item.team_id === opponent.opponent?.id);
   return result?.score ?? "—";
 }
-
 function saveFavorites() {
-  try {
-    localStorage.setItem("huevoFavorites",JSON.stringify(favorites));
-  } catch (error) {
-    console.warn("Не удалось сохранить избранное",error);
-  }
+  try { localStorage.setItem("huevoFavorites",JSON.stringify(favorites)); }
+  catch (error) { console.warn("Не удалось сохранить избранное",error); }
 }
-
 function toggleMatchFavorites(names) {
   const allSelected = names.every(name => favorites.includes(name));
-
-  if (allSelected) {
-    favorites = favorites.filter(name => !names.includes(name));
-  } else {
-    names.forEach(name => {
-      if (!favorites.includes(name)) favorites.push(name);
-    });
-  }
-
-  saveFavorites();
-  render();
+  if (allSelected) favorites = favorites.filter(name => !names.includes(name));
+  else names.forEach(name => { if (!favorites.includes(name)) favorites.push(name); });
+  saveFavorites(); render();
 }
-
 function showEmpty(icon,title,message) {
   const list = document.getElementById("matchList");
-  const empty = document.createElement("div");
-  empty.className = "empty";
-
-  const emoji = document.createElement("div");
-  emoji.className = "empty-icon";
-  emoji.textContent = icon;
-
-  const heading = document.createElement("h3");
-  heading.textContent = title;
-
-  const paragraph = document.createElement("p");
-  paragraph.textContent = message;
-
-  empty.append(emoji,heading,paragraph);
-  list.append(empty);
+  const empty = document.createElement("div"); empty.className = "empty";
+  const emoji = document.createElement("div"); emoji.className = "empty-icon"; emoji.textContent = icon;
+  const heading = document.createElement("h3"); heading.textContent = title;
+  const paragraph = document.createElement("p"); paragraph.textContent = message;
+  empty.append(emoji,heading,paragraph); list.append(empty);
 }
-
 function getMatchStatus(match) {
   if (match.category === "live") return "LIVE";
   if (match.category === "past") return "Завершён";
   return "Предстоящий";
 }
-
 function getMatchGame(match) {
-  return match.game === "dota" ? "Dota 2" :
-         match.game === "cs" ? "CS2" : "Неизвестно";
+  return match.game === "dota" ? "Dota 2" : match.game === "cs" ? "CS2" : "Неизвестно";
+}
+
+function persistQuizData() {
+  try {
+    localStorage.setItem("huevoCoins",String(coinBalance));
+    localStorage.setItem("huevoCompletedQuizzes",JSON.stringify(completedQuizzes));
+    localStorage.setItem("huevoQuizHistory",JSON.stringify(quizHistory));
+  } catch (error) { console.warn("Не удалось сохранить данные викторины",error); }
+}
+function getQuizId(match,names) {
+  return String(match.id || `${names[0]}-${names[1]}-${match.begin_at || "unknown"}`);
+}
+function createQuiz(match,names) {
+  const questions = {
+    dota: {
+      question:"Сколько игроков находится в одной команде в стандартном матче Dota 2?",
+      answers:["3 игрока","5 игроков","6 игроков","7 игроков"], correct:1
+    },
+    cs: {
+      question:"Сколько игроков одной команды участвует в стандартном соревновательном матче CS2?",
+      answers:["4 игрока","5 игроков","6 игроков","8 игроков"], correct:1
+    }
+  };
+  const question = questions[match.game];
+  if (!question) return null;
+
+  const quizId = getQuizId(match,names);
+  const alreadyCompleted = completedQuizzes.includes(quizId);
+  let selectedTeam = "";
+
+  const box = document.createElement("section"); box.className = "quiz-box";
+  const title = document.createElement("div"); title.className = "quiz-title"; title.textContent = "🎮 Игровое задание";
+  const description = document.createElement("div"); description.className = "quiz-description";
+  description.textContent = "Выбери команду для оформления задания и ответь на вопрос. Выбор команды не влияет на результат матча.";
+  const teams = document.createElement("div"); teams.className = "quiz-teams";
+  const message = document.createElement("div"); message.className = "quiz-message";
+  const questionTitle = document.createElement("div"); questionTitle.className = "quiz-question"; questionTitle.textContent = question.question;
+  const answers = document.createElement("div"); answers.className = "quiz-answers";
+  const history = document.createElement("div"); history.className = "quiz-history";
+
+  function renderHistory() {
+    history.replaceChildren();
+    const heading = document.createElement("strong"); heading.textContent = "Последние награды";
+    history.append(heading);
+    const recent = quizHistory.slice(-3).reverse();
+    if (!recent.length) {
+      const empty = document.createElement("div"); empty.textContent = "Пока наград нет"; history.append(empty); return;
+    }
+    recent.forEach(entry => {
+      const line = document.createElement("div");
+      line.textContent = `+${entry.reward} монет · ${entry.team}`;
+      history.append(line);
+    });
+  }
+
+  names.forEach(name => {
+    const button = document.createElement("button");
+    button.className = "quiz-team"; button.type = "button"; button.textContent = name;
+    button.disabled = alreadyCompleted;
+    button.addEventListener("click",() => {
+      if (completedQuizzes.includes(quizId)) return;
+      selectedTeam = name;
+      teams.querySelectorAll("button").forEach(item => item.classList.remove("selected"));
+      button.classList.add("selected");
+      message.textContent = `Выбрана команда: ${name}`;
+    });
+    teams.append(button);
+  });
+
+  question.answers.forEach((answer,index) => {
+    const button = document.createElement("button");
+    button.className = "quiz-answer"; button.type = "button"; button.textContent = answer;
+    button.disabled = alreadyCompleted;
+    button.addEventListener("click",() => {
+      if (completedQuizzes.includes(quizId)) return;
+      if (!selectedTeam) { message.textContent = "Сначала выбери команду"; return; }
+
+      if (index === question.correct) {
+        coinBalance += 10;
+        completedQuizzes.push(quizId);
+        quizHistory.push({team:selectedTeam,reward:10,date:new Date().toISOString(),match: names.join(" — ")});
+        persistQuizData(); updateCoinBalance();
+        message.textContent = "Верно! Ты получил 10 игровых монет 🎉";
+      } else {
+        message.textContent = "Ответ неверный. Попробуй ещё раз!";
+        button.disabled = true;
+        return;
+      }
+      answers.querySelectorAll("button").forEach(item => { item.disabled = true; });
+      teams.querySelectorAll("button").forEach(item => { item.disabled = true; });
+      renderHistory();
+    });
+    answers.append(button);
+  });
+
+  if (alreadyCompleted) message.textContent = "Ты уже выполнил задание для этого матча";
+  renderHistory();
+  box.append(title,description,teams,questionTitle,answers,message,history);
+  return box;
 }
 
 function openMatchDetails(match) {
-  const names = teamNames(match);
-  const gameName = getMatchGame(match);
-  const status = getMatchStatus(match);
+  const names = teamNames(match), gameName = getMatchGame(match), status = getMatchStatus(match);
   const isScoreAvailable = match.category === "live" || match.category === "past";
+  const content = document.getElementById("modalContent"); content.replaceChildren();
 
-  const content = document.getElementById("modalContent");
-  content.replaceChildren();
-
-  const league = document.createElement("div");
-  league.className = "detail-league";
-  league.textContent =
-    `${match.league?.name || "Турнир не указан"} · ${gameName}`;
-
-  const teams = document.createElement("div");
-  teams.className = "detail-teams";
-
-  const teamA = document.createElement("div");
-  teamA.className = "detail-team";
-  teamA.textContent = names[0];
-
-  const score = document.createElement("div");
-  score.className = "detail-score";
-  score.textContent = isScoreAvailable
-    ? `${getScore(match,names[0])} : ${getScore(match,names[1])}`
-    : "VS";
-
-  const teamB = document.createElement("div");
-  teamB.className = "detail-team";
-  teamB.textContent = names[1];
-
+  const league = document.createElement("div"); league.className = "detail-league";
+  league.textContent = `${match.league?.name || "Турнир не указан"} · ${gameName}`;
+  const teams = document.createElement("div"); teams.className = "detail-teams";
+  const teamA = document.createElement("div"); teamA.className = "detail-team"; teamA.textContent = names[0];
+  const score = document.createElement("div"); score.className = "detail-score";
+  score.textContent = isScoreAvailable ? `${getScore(match,names[0])} : ${getScore(match,names[1])}` : "VS";
+  const teamB = document.createElement("div"); teamB.className = "detail-team"; teamB.textContent = names[1];
   teams.append(teamA,score,teamB);
 
-  const statusWrap = document.createElement("div");
-  statusWrap.className = "detail-status";
-
-  const statusTag = document.createElement("span");
-  statusTag.className = "tag";
+  const statusWrap = document.createElement("div"); statusWrap.className = "detail-status";
+  const statusTag = document.createElement("span"); statusTag.className = "tag";
   if (match.category === "live") statusTag.classList.add("live");
   if (match.category === "past") statusTag.classList.add("past");
-  statusTag.textContent = status;
+  statusTag.textContent = status; statusWrap.append(statusTag);
 
-  statusWrap.append(statusTag);
-
-  const grid = document.createElement("div");
-  grid.className = "detail-grid";
-
+  const grid = document.createElement("div"); grid.className = "detail-grid";
   const details = [
     ["Дисциплина",gameName],
     ["Турнир",match.tournament?.name || match.league?.name || "Не указан"],
@@ -814,250 +514,133 @@ function openMatchDetails(match) {
     ["Начало матча",formatDate(match.begin_at)],
     ["Окончание",formatDate(match.end_at)]
   ];
-
   details.forEach(([label,value]) => {
-    const item = document.createElement("div");
-    item.className = "detail-item";
-
-    const title = document.createElement("span");
-    title.textContent = label;
-
-    const text = document.createElement("strong");
-    text.textContent = value;
-
-    item.append(title,text);
-    grid.append(item);
+    const item = document.createElement("div"); item.className = "detail-item";
+    const title = document.createElement("span"); title.textContent = label;
+    const text = document.createElement("strong"); text.textContent = value;
+    item.append(title,text); grid.append(item);
   });
 
-  const note = document.createElement("div");
-  note.className = "modal-note";
-  note.textContent = match.id
-    ? `ID матча: ${match.id} · Информация получена из PandaScore`
-    : "Информация получена из PandaScore";
-
-  content.append(league,teams,statusWrap,grid,note);
+  const quiz = createQuiz(match,names);
+  const note = document.createElement("div"); note.className = "modal-note";
+  note.textContent = match.id ? `ID матча: ${match.id} · Информация получена из PandaScore` : "Информация получена из PandaScore";
+  if (quiz) content.append(league,teams,statusWrap,grid,quiz,note);
+  else content.append(league,teams,statusWrap,grid,note);
 
   document.getElementById("detailsOverlay").classList.add("open");
   document.body.style.overflow = "hidden";
   document.getElementById("modalClose").focus();
 }
-
 function closeMatchDetails() {
   document.getElementById("detailsOverlay").classList.remove("open");
   document.body.style.overflow = "";
 }
-
 document.getElementById("modalClose").addEventListener("click",closeMatchDetails);
-
 document.getElementById("detailsOverlay").addEventListener("click",event => {
-  if (event.target.id === "detailsOverlay") {
-    closeMatchDetails();
-  }
+  if (event.target.id === "detailsOverlay") closeMatchDetails();
 });
-
-document.addEventListener("keydown",event => {
-  if (event.key === "Escape") closeMatchDetails();
-});
+document.addEventListener("keydown",event => { if (event.key === "Escape") closeMatchDetails(); });
 
 function render() {
   const all = getAllMatches();
-
-  document.getElementById("liveCount").textContent =
-    all.filter(match => match.category === "live").length;
-
+  document.getElementById("liveCount").textContent = all.filter(match => match.category === "live").length;
   document.getElementById("favCount").textContent = favorites.length;
-
   let filtered = all;
 
-  if (currentPage === "live") {
-    filtered = all.filter(match => match.category === "live");
-  } else if (currentPage === "results") {
-    filtered = all.filter(match => match.category === "past");
-  } else if (currentPage === "dota") {
-    filtered = all.filter(match => match.game === "dota");
-  } else if (currentPage === "cs") {
-    filtered = all.filter(match => match.game === "cs");
-  } else if (currentPage === "favorites") {
-    filtered = all.filter(match =>
-      teamNames(match).some(name => favorites.includes(name))
-    );
-  } else if (currentPage === "football" || currentPage === "basketball") {
-    filtered = [];
-  } else if (currentPage === "home") {
-    filtered = all.filter(match =>
-      match.category === "live" || match.category === "upcoming"
-    );
-  }
+  if (currentPage === "live") filtered = all.filter(match => match.category === "live");
+  else if (currentPage === "results") filtered = all.filter(match => match.category === "past");
+  else if (currentPage === "dota") filtered = all.filter(match => match.game === "dota");
+  else if (currentPage === "cs") filtered = all.filter(match => match.game === "cs");
+  else if (currentPage === "favorites") filtered = all.filter(match => teamNames(match).some(name => favorites.includes(name)));
+  else if (currentPage === "football" || currentPage === "basketball") filtered = [];
+  else if (currentPage === "home") filtered = all.filter(match => match.category === "live" || match.category === "upcoming");
 
-  if (currentFilter === "dota") {
-    filtered = filtered.filter(match => match.game === "dota");
-  } else if (currentFilter === "cs") {
-    filtered = filtered.filter(match => match.game === "cs");
-  }
+  if (currentFilter === "dota") filtered = filtered.filter(match => match.game === "dota");
+  else if (currentFilter === "cs") filtered = filtered.filter(match => match.game === "cs");
 
   if (searchQuery) {
     filtered = filtered.filter(match => {
-      const names = teamNames(match).join(" ");
-      const league = match.league?.name || "";
-      const tournament = match.tournament?.name || "";
-      const game = getMatchGame(match);
-
-      const searchable =
-        `${names} ${league} ${tournament} ${game}`.toLowerCase();
-
+      const searchable = `${teamNames(match).join(" ")} ${match.league?.name || ""} ${match.tournament?.name || ""} ${getMatchGame(match)}`.toLowerCase();
       return searchable.includes(searchQuery);
     });
   }
 
-  const list = document.getElementById("matchList");
-  list.replaceChildren();
-
-  if (!matchesData) {
-    showEmpty("📡","Загружаем матчи","Получаем спортивные данные...");
-    return;
-  }
-
+  const list = document.getElementById("matchList"); list.replaceChildren();
+  if (!matchesData) { showEmpty("📡","Загружаем матчи","Получаем спортивные данные..."); return; }
   if (!filtered.length) {
-    if (searchQuery) {
-      showEmpty("🔎","Ничего не найдено",
-        "Попробуй изменить поисковый запрос.");
-    } else if (currentPage === "football" || currentPage === "basketball") {
-      showEmpty("🏟️","Источник ещё не подключён",
-        "Данные для этого вида спорта пока не подключены.");
-    } else if (currentPage === "favorites" && favorites.length === 0) {
-      showEmpty("☆","Избранное пусто",
-        "Добавляй команды в избранное с помощью звёздочки на карточке.");
-    } else {
-      showEmpty("📭","Матчей пока нет",
-        "В этой категории сейчас нет событий. Попробуй проверить позже.");
-    }
+    if (searchQuery) showEmpty("🔎","Ничего не найдено","Попробуй изменить поисковый запрос.");
+    else if (currentPage === "football" || currentPage === "basketball") showEmpty("🏟️","Источник ещё не подключён","Данные для этого вида спорта пока не подключены.");
+    else if (currentPage === "favorites" && favorites.length === 0) showEmpty("☆","Избранное пусто","Добавляй команды в избранное с помощью звёздочки на карточке.");
+    else showEmpty("📭","Матчей пока нет","В этой категории сейчас нет событий. Попробуй проверить позже.");
     return;
   }
 
   filtered.sort((a,b) => {
     if (a.category === "live" && b.category !== "live") return -1;
     if (b.category === "live" && a.category !== "live") return 1;
-
-    if (a.category === "past" && b.category === "past") {
-      return new Date(b.begin_at || 0) - new Date(a.begin_at || 0);
-    }
-
+    if (a.category === "past" && b.category === "past") return new Date(b.begin_at || 0) - new Date(a.begin_at || 0);
     return new Date(a.begin_at || 0) - new Date(b.begin_at || 0);
   });
 
   filtered.forEach(match => {
     const names = teamNames(match);
-
-    const card = document.createElement("article");
-    card.className = "match";
-    card.tabIndex = 0;
+    const card = document.createElement("article"); card.className = "match"; card.tabIndex = 0;
     card.setAttribute("role","button");
     card.setAttribute("aria-label",`Подробнее о матче ${names[0]} против ${names[1]}`);
+    const info = document.createElement("div"); info.className = "match-info";
+    const league = document.createElement("div"); league.className = "match-league";
+    league.textContent = `${match.league?.name || "Турнир не указан"} · ${getMatchGame(match)}`;
+    const teams = document.createElement("div"); teams.className = "match-teams"; teams.textContent = `${names[0]}  —  ${names[1]}`;
+    const time = document.createElement("div"); time.className = "match-time";
+    time.textContent = match.category === "past" || match.category === "live"
+      ? `Счёт: ${getScore(match,names[0])} : ${getScore(match,names[1])}`
+      : formatDate(match.begin_at);
 
-    const info = document.createElement("div");
-    info.className = "match-info";
+    const side = document.createElement("div"); side.className = "match-side";
+    const tag = document.createElement("span"); tag.className = "tag";
+    if (match.category === "live") { tag.classList.add("live"); tag.textContent = "● LIVE"; }
+    else if (match.category === "past") { tag.classList.add("past"); tag.textContent = "Завершён"; }
+    else tag.textContent = "Предстоящий";
 
-    const league = document.createElement("div");
-    league.className = "match-league";
-    league.textContent =
-      `${match.league?.name || "Турнир не указан"} · ${getMatchGame(match)}`;
-
-    const teams = document.createElement("div");
-    teams.className = "match-teams";
-    teams.textContent = `${names[0]}  —  ${names[1]}`;
-
-    const time = document.createElement("div");
-    time.className = "match-time";
-
-    if (match.category === "past" || match.category === "live") {
-      time.textContent =
-        `Счёт: ${getScore(match,names[0])} : ${getScore(match,names[1])}`;
-    } else {
-      time.textContent = formatDate(match.begin_at);
-    }
-
-    const side = document.createElement("div");
-    side.className = "match-side";
-
-    const tag = document.createElement("span");
-    tag.className = "tag";
-
-    if (match.category === "live") {
-      tag.classList.add("live");
-      tag.textContent = "● LIVE";
-    } else if (match.category === "past") {
-      tag.classList.add("past");
-      tag.textContent = "Завершён";
-    } else {
-      tag.textContent = "Предстоящий";
-    }
-
-    const fav = document.createElement("button");
-    fav.className = "fav-button";
-
+    const fav = document.createElement("button"); fav.className = "fav-button";
     const isFavorite = names.every(name => favorites.includes(name));
-    fav.textContent = isFavorite ? "★" : "☆";
-    fav.classList.toggle("selected",isFavorite);
-    fav.title = "Добавить или убрать команды из избранного";
-    fav.setAttribute("aria-label",fav.title);
-
-    fav.addEventListener("click",event => {
-      event.stopPropagation();
-      toggleMatchFavorites(names);
-    });
+    fav.textContent = isFavorite ? "★" : "☆"; fav.classList.toggle("selected",isFavorite);
+    fav.title = "Добавить или убрать команды из избранного"; fav.setAttribute("aria-label",fav.title);
+    fav.addEventListener("click",event => { event.stopPropagation(); toggleMatchFavorites(names); });
 
     card.addEventListener("click",() => openMatchDetails(match));
-
     card.addEventListener("keydown",event => {
       if (event.target === card && (event.key === "Enter" || event.key === " ")) {
-        event.preventDefault();
-        openMatchDetails(match);
+        event.preventDefault(); openMatchDetails(match);
       }
     });
-
-    info.append(league,teams,time);
-    side.append(tag,fav);
-    card.append(info,side);
-    list.append(card);
+    info.append(league,teams,time); side.append(tag,fav); card.append(info,side); list.append(card);
   });
 }
 
 async function loadMatches() {
   try {
-    const response = await fetch(
-      "./data/matches.json?t=" + Date.now(),
-      {cache:"no-store"}
-    );
-
-    if (!response.ok) {
-      throw new Error("HTTP " + response.status);
-    }
-
+    const response = await fetch("./data/matches.json?t=" + Date.now(),{cache:"no-store"});
+    if (!response.ok) throw new Error("HTTP " + response.status);
     const data = await response.json();
-
-    if (!data || !data.matches) {
-      throw new Error("Некорректный формат данных");
-    }
-
-    matchesData = data;
-    render();
-
+    if (!data || !data.matches) throw new Error("Некорректный формат данных");
+    matchesData = data; render();
     console.log("HuevoBet: данные обновлены",data.updated_at);
   } catch (error) {
     console.error("HuevoBet data error:",error);
-
     if (!matchesData) {
-      const list = document.getElementById("matchList");
-      list.replaceChildren();
-
-      showEmpty("⚠️","Не удалось загрузить матчи",
-        "Проверь подключение источника данных и попробуй обновить страницу.");
+      const list = document.getElementById("matchList"); list.replaceChildren();
+      showEmpty("⚠️","Не удалось загрузить матчи","Проверь подключение источника данных и попробуй обновить страницу.");
     }
   }
 }
-
 loadMatches();
 setInterval(loadMatches,5 * 60 * 1000);
 </script>
 </body>
 </html>
+'''
+
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(f"Готово: {path.name} — {path.stat().st_size:,} байт")
